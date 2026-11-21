@@ -36,8 +36,8 @@ const examples = [
   },
   {
     image: 'chalkboard', tab: 'ex.t6', title: 'ex.h6', caption: 'ex.c6',
-    uk: "Зелена крейдова дошка з параболою, прямою й точками їх перетину в Inkboard",
-    en: "A green chalkboard with a parabola, a line and their intersection points in Inkboard"
+    uk: "Зелена крейдова дошка з параболою, прямою й точками їх перетину в Penrill",
+    en: "A green chalkboard with a parabola, a line and their intersection points in Penrill"
   }
 ] as const
 
@@ -135,11 +135,11 @@ export function Site({ lang }: { lang: SiteLanguage }) {
     <>
       <header className={scrolled ? 'scrolled' : undefined}>
         <div className="wrap bar">
-          <a className="brand" href="#top"><img src={asset('img/icon.png')} alt="" />Inkboard</a>
+          <a className="brand" href="#top"><img src={asset('img/icon.png')} alt="" />Penrill</a>
           <nav>
             <a className="hide-sm" href="#examples">{t('nav.examples')}</a>
             <a className="hide-sm" href="#features">{t('nav.features')}</a>
-            <a className="hide-sm" href="https://github.com/yaroslavyushchenko/inkboard">GitHub</a>
+            <a className="hide-sm" href="https://github.com/Penrill/penrill">GitHub</a>
             <a className="nav-web hide-sm" href={asset('app/')}>{t('nav.web')}</a>
             <a className="nav-cta" href="#download">{t('nav.download')}</a>
             <div className="lang" role="group" aria-label="Мова / Language">
@@ -157,7 +157,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
       <main id="top">
         <div className="hero">
           <div className="wrap">
-            <a className="pill rv in" href="https://github.com/yaroslavyushchenko/inkboard"><b>{t('hero.pill.b')}</b><span>{t('hero.pill')}</span></a>
+            <a className="pill rv in" href="https://github.com/Penrill/penrill"><b>{t('hero.pill.b')}</b><span>{t('hero.pill')}</span></a>
             <h1>{t('hero.title')}{' '}{t('hero.highlight').split(' ').map((word, index) => (
               <Fragment key={word}>
                 {index > 0 && ' '}
@@ -403,7 +403,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                 <h4>{t('d.first')}</h4>
                 <ol className="steps">
                   <li><div className="mock"><div className="chk"><i></i><span>{t('mk.exec')}</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.linux.s1')} /></li>
-                  <li><div className="mock"><div className="file"><img src={asset('img/icon.png')} alt="" /><span>Inkboard.AppImage</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.linux.s2')} /></li>
+                  <li><div className="mock"><div className="file"><img src={asset('img/icon.png')} alt="" /><span>Penrill.AppImage</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.linux.s2')} /></li>
                 </ol>
               </div>
             </div>
@@ -440,10 +440,10 @@ export function Site({ lang }: { lang: SiteLanguage }) {
 
       <footer>
         <div className="wrap">
-          <span>Inkboard · <span>{t('foot.license')}</span></span>
-          <a href="https://github.com/yaroslavyushchenko/inkboard">{t('foot.code')}</a>
-          <a href="https://github.com/yaroslavyushchenko/inkboard/issues">{t('foot.issues')}</a>
-          <a href="https://github.com/yaroslavyushchenko/inkboard/releases">{t('foot.releases')}</a>
+          <span>Penrill · <span>{t('foot.license')}</span></span>
+          <a href="https://github.com/Penrill/penrill">{t('foot.code')}</a>
+          <a href="https://github.com/Penrill/penrill/issues">{t('foot.issues')}</a>
+          <a href="https://github.com/Penrill/penrill/releases">{t('foot.releases')}</a>
         </div>
       </footer>
     </>

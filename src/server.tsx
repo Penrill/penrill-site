@@ -5,7 +5,7 @@ import { LANGUAGE_KEY, LANGUAGES, pagePath } from './siteData'
 
 /** Build-time entry: scripts/prerender-site.mjs turns each language into a static HTML page. */
 
-export const SITE_ORIGIN = 'https://yaroslavyushchenko.github.io'
+export const SITE_ORIGIN = 'https://penrill.com'
 const pageUrl = (lang: SiteLanguage) => SITE_ORIGIN + pagePath(lang)
 const IMAGE = SITE_ORIGIN + import.meta.env.BASE_URL + 'img/social-preview.png'
 const LOCALE = { uk: 'uk_UA', en: 'en_US' } as const

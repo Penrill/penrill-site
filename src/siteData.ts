@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { SiteLanguage } from './messages'
 
-const REPO = 'yaroslavyushchenko/inkboard'
+const REPO = 'Penrill/penrill'
 export const RELEASES = `https://github.com/${REPO}/releases/latest`
 export const asset = (path: string) => import.meta.env.BASE_URL + path
 
@@ -23,7 +23,7 @@ export function detectOs(): Os | null {
  * (see the script in server.tsx), so search engines still see both pages as they are.
  */
 export const LANGUAGES: readonly SiteLanguage[] = ['uk', 'en']
-export const LANGUAGE_KEY = 'inkboard-site-lang'
+export const LANGUAGE_KEY = 'penrill-site-lang'
 export const pagePath = (lang: SiteLanguage) => import.meta.env.BASE_URL + (lang === 'uk' ? 'uk/' : '')
 
 export function languageOfPath(path: string): SiteLanguage {
