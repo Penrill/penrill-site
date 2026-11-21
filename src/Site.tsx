@@ -1,451 +1,468 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { asset, assetSize, detectOs, LANGUAGES, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
+import { useEffect, useState, type ComponentType, type ComponentProps } from 'react'
+import { AnnouncementBadge } from './components/elements/announcement-badge'
+import { ButtonLink, PlainButtonLink, SoftButtonLink } from './components/elements/button'
+import { Logo, LogoGrid } from './components/elements/logo-grid'
+import { Main } from './components/elements/main'
+import { Screenshot } from './components/elements/screenshot'
+import { Section } from './components/elements/section'
+import { ArrowNarrowRightIcon } from './components/icons/arrow-narrow-right-icon'
+import { ChartLineIcon } from './components/icons/chart-line-icon'
+import { CheckmarkIcon } from './components/icons/checkmark-icon'
+import { ChevronIcon } from './components/icons/chevron-icon'
+import { Document2StackedIcon } from './components/icons/document-2-stacked-icon'
+import { DocumentIcon } from './components/icons/document-icon'
+import { GitHubIcon } from './components/icons/github-icon'
+import { HardDriveIcon } from './components/icons/hard-drive-icon'
+import { LanguageIcon } from './components/icons/language-icon'
+import { LockIcon } from './components/icons/lock-icon'
+import { PencilOnSquareIcon } from './components/icons/pencil-on-square-icon'
+import { PhotoIcon } from './components/icons/photo-icon'
+import { SlidersIcon } from './components/icons/sliders-icon'
+import { CallToActionSimple } from './components/sections/call-to-action-simple'
+import { FAQsTwoColumnAccordion, Faq } from './components/sections/faqs-two-column-accordion'
+import { Feature as ExampleCard } from './components/sections/features-two-column-with-demos'
+import { Feature, FeaturesThreeColumn } from './components/sections/features-three-column'
+import {
+  FooterBrand,
+  FooterCategory,
+  FooterLink,
+  FooterWithNewsletterFormCategoriesAndSocialIcons,
+  SocialLink,
+} from './components/sections/footer-with-newsletter-form-categories-and-social-icons'
+import { HeroLeftAlignedWithDemo } from './components/sections/hero-left-aligned-with-demo'
+import { NavbarLink, NavbarLogo, NavbarWithLinksActionsAndCenteredLogo } from './components/sections/navbar-with-links-actions-and-centered-logo'
+import { Plan, PricingMultiTier } from './components/sections/pricing-multi-tier'
+import { Stat, StatsWithGraph } from './components/sections/stats-with-graph'
 import { downloadNotes, messages, pageInfo, type SiteLanguage } from './messages'
-import { Count, useReveal } from './reveal'
+import { AppleIcon, GlobeIcon, LinuxIcon, WindowsIcon } from './platform-icons'
+import { asset, assetSize, detectOs, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
+
+const GITHUB = 'https://github.com/Penrill/penrill'
+type Key = keyof typeof messages.en
+type Wallpaper = ComponentProps<typeof Screenshot>['wallpaper']
 
 const examples = [
   {
-    image: 'formulas', tab: 'ex.t0', title: 'ex.h0', caption: 'ex.c0',
-    uk: "Формули з клавіатури формул: парабола з обмеженням по x, функція g(x) = √(x + 4) і половина кола x² + y² = 9, обмежена по y, на одній площині; поруч 3/4 + 1/2 з відповіддю 1,25",
-    en: "Formulas from the math keypad: a parabola limited in x, the function g(x) = √(x + 4) and half of the circle x² + y² = 9, limited in y, on one plane; beside them 3/4 + 1/2 with the answer 1.25"
+    image: 'formulas', title: 'ex.h0', caption: 'ex.c0', isNew: true,
+    uk: 'Формули з клавіатури формул: парабола з обмеженням по x, функція g(x) = √(x + 4) і половина кола x² + y² = 9, обмежена по y, на одній площині; поруч 3/4 + 1/2 з відповіддю 1,25',
+    en: 'Formulas from the math keypad: a parabola limited in x, the function g(x) = √(x + 4) and half of the circle x² + y² = 9, limited in y, on one plane; beside them 3/4 + 1/2 with the answer 1.25'
   },
   {
-    image: 'geometry', tab: 'ex.t1', title: 'ex.h1', caption: 'ex.c1',
-    uk: "Побудова рівностороннього трикутника: дуги циркулем, кут 60° на транспортирі",
-    en: "Constructing an equilateral triangle: compass arcs and a 60° angle on the protractor"
+    image: 'geometry', title: 'ex.h1', caption: 'ex.c1',
+    uk: 'Побудова рівностороннього трикутника: дуги циркулем, кут 60° на транспортирі',
+    en: 'Constructing an equilateral triangle: compass arcs and a 60° angle on the protractor'
   },
   {
-    image: 'graphs', tab: 'ex.t2', title: 'ex.h2', caption: 'ex.c2',
-    uk: "Координатна площина з параболою y = x² − 2 і прямою y = x/2 + 1 та точками їх перетину",
-    en: "A coordinate plane with the parabola y = x² − 2, the line y = x/2 + 1 and their intersection points"
+    image: 'graphs', title: 'ex.h2', caption: 'ex.c2',
+    uk: 'Координатна площина з параболою y = x² − 2 і прямою y = x/2 + 1 та точками їх перетину',
+    en: 'A coordinate plane with the parabola y = x² − 2, the line y = x/2 + 1 and their intersection points'
   },
   {
-    image: 'solids', tab: 'ex.t3', title: 'ex.h3', caption: 'ex.c3',
-    uk: "Куб, призма, піраміда, циліндр, конус, куля і шестикутна піраміда з пунктирними невидимими ребрами",
-    en: "Cube, prism, pyramid, cylinder, cone, sphere and a hexagonal pyramid with hidden edges dashed"
+    image: 'solids', title: 'ex.h3', caption: 'ex.c3',
+    uk: 'Куб, призма, піраміда, циліндр, конус, куля і шестикутна піраміда з пунктирними невидимими ребрами',
+    en: 'Cube, prism, pyramid, cylinder, cone, sphere and a hexagonal pyramid with hidden edges dashed'
   },
   {
-    image: 'text', tab: 'ex.t4', title: 'ex.h4', caption: 'ex.c4',
-    uk: "Задача на теорему косинусів: «Дано», «Знайти», «Розв’язання» різними кольорами, відповідь виділено маркером",
-    en: "A law of cosines problem: Given, Find and Solution in different colours, the answer highlighted"
+    image: 'text', title: 'ex.h4', caption: 'ex.c4',
+    uk: 'Задача на теорему косинусів: «Дано», «Знайти», «Розв’язання» різними кольорами, відповідь виділено маркером',
+    en: 'A law of cosines problem: Given, Find and Solution in different colours, the answer highlighted'
   },
   {
-    image: 'home', tab: 'ex.t5', title: 'ex.h5', caption: 'ex.c5',
-    uk: "Екран «Усі дошки»: прев’ю дощок, теги предметів і тем, закріплені дошки, пошук",
-    en: "The All boards screen: board previews, subject and topic tags, pinned boards, search"
+    image: 'home', title: 'ex.h5', caption: 'ex.c5',
+    uk: 'Екран «Усі дошки»: прев’ю дощок, теги предметів і тем, закріплені дошки, пошук',
+    en: 'The All boards screen: board previews, subject and topic tags, pinned boards, search'
   },
   {
-    image: 'chalkboard', tab: 'ex.t6', title: 'ex.h6', caption: 'ex.c6',
-    uk: "Зелена крейдова дошка з параболою, прямою й точками їх перетину в Penrill",
-    en: "A green chalkboard with a parabola, a line and their intersection points in Penrill"
+    image: 'chalkboard', title: 'ex.h6', caption: 'ex.c6',
+    uk: 'Зелена крейдова дошка з параболою, прямою й точками їх перетину в Penrill',
+    en: 'A green chalkboard with a parabola, a line and their intersection points in Penrill'
   }
 ] as const
 
-const exampleScrollStyle = { '--n': examples.length } as CSSProperties
-const stackedExamples = '(max-width: 960px), (max-height: 600px)'
-const assetOf = { win: 'exe', mac: 'dmg', linux: 'appimage' } as const
-const extOf = { win: '.exe', mac: '.dmg', linux: '.AppImage' }
+/** Examples in rows of two, three and two cards. */
+const exampleRows = [[0, 1], [2, 3, 4], [5, 6]] as const
+const wallpapers: Wallpaper[] = ['blue', 'purple', 'green', 'brown', 'blue', 'purple', 'green']
 
-function useSegmentIndicator(ref: React.RefObject<HTMLDivElement | null>, selection: string | number, lang: SiteLanguage) {
-  useLayoutEffect(() => {
-    const segment = ref.current
-    const knob = segment?.querySelector<HTMLElement>('.knob')
-    const button = segment?.querySelector<HTMLElement>('[aria-selected="true"]')
-    if (!segment || !knob || !button) return
-    const position = () => {
-      knob.style.width = `${button.offsetWidth}px`
-      knob.style.transform = `translateX(${button.offsetLeft}px)`
+const features: { icon: ComponentType<{ className?: string }>; title: Key; text: Key }[] = [
+  { icon: PencilOnSquareIcon, title: 'f.ink.t', text: 'f.ink.d' },
+  { icon: SlidersIcon, title: 'f.wacom.t', text: 'f.wacom.d' },
+  { icon: ChartLineIcon, title: 'f.fx.t', text: 'f.fx.d' },
+  { icon: Document2StackedIcon, title: 'f.tpl.t', text: 'f.tpl.d' },
+  { icon: PhotoIcon, title: 'f.img.t', text: 'f.img.d' },
+  { icon: LockIcon, title: 'f.select.t', text: 'f.select.d' },
+  { icon: LanguageIcon, title: 'f.lang.t', text: 'f.lang.d' },
+  { icon: DocumentIcon, title: 'f.exp.t', text: 'f.exp.d' },
+  { icon: HardDriveIcon, title: 'f.offline.t', text: 'f.offline.d' }
+]
+
+const platforms = [
+  { os: 'win', name: 'Windows', icon: WindowsIcon, file: 'exe', get: 'd.get.exe', req: 'd.win.req', updates: 'u.win', badge: 'u.auto', first: 'd.first', steps: ['d.win.s1', 'd.win.s2'] },
+  { os: 'mac', name: 'macOS', icon: AppleIcon, file: 'dmg', get: 'd.get.dmg', req: 'd.mac.req', updates: 'u.mac', badge: 'u.manual', first: 'd.first.mac', steps: ['d.mac.s1', 'd.mac.s2', 'd.mac.s3', 'd.mac.s4'] },
+  { os: 'linux', name: 'Linux', icon: LinuxIcon, file: 'appimage', get: 'd.get.appimage', req: 'd.linux.req', updates: 'u.linux', badge: 'u.auto', first: 'd.first', steps: ['d.linux.s1', 'd.linux.s2'] }
+] as const
+
+const assetOf = { win: 'exe', mac: 'dmg', linux: 'appimage' } as const
+
+/** Links and bold words inside translated strings, styled like Oatmeal's document text. */
+const richText = '[&_a]:font-medium [&_a]:text-mist-950 [&_a]:underline [&_a]:underline-offset-4 dark:[&_a]:text-white [&_b]:font-medium [&_b]:text-mist-950 dark:[&_b]:text-white'
+
+/** A screenshot of the app in the visitor's colour scheme. */
+function Shot({ name, lang, alt, eager, className }: { name: string; lang: SiteLanguage; alt: string; eager?: boolean; className?: string }) {
+  return (
+    <picture className={['block overflow-hidden', className].filter(Boolean).join(' ')}>
+      <source media="(prefers-color-scheme: dark)" srcSet={asset(`img/${name}-dark-${lang}.webp`)} />
+      <img
+        src={asset(`img/${name}-${lang}.webp`)}
+        width={2000}
+        height={1250}
+        alt={alt}
+        loading={eager ? undefined : 'lazy'}
+        fetchPriority={eager ? 'high' : undefined}
+        className="block h-auto w-full"
+      />
+    </picture>
+  )
+}
+
+function useOpenDetailsFromHash() {
+  // Links such as #why point at a closed FAQ answer: open it.
+  useEffect(() => {
+    const open = () => {
+      const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)))
+      if (target instanceof HTMLDetailsElement) target.open = true
     }
-    position()
-    const observer = new ResizeObserver(position)
-    observer.observe(segment)
-    observer.observe(button)
-    return () => observer.disconnect()
-  }, [ref, selection, lang])
+    open()
+    addEventListener('hashchange', open)
+    return () => removeEventListener('hashchange', open)
+  }, [])
 }
 
 /** The page for one language. Prerendered to HTML at build time (server.tsx), then hydrated. */
 export function Site({ lang }: { lang: SiteLanguage }) {
   // The visitor's system is only known in the browser: the prerendered page starts without it.
   const [visitorOs, setVisitorOs] = useState<Os | null>(null)
-  const [os, setOs] = useState<Os>('win')
-  const [scrolled, setScrolled] = useState(false)
-  const [activeExample, setActiveExample] = useState(0)
-  const exampleSection = useRef<HTMLDivElement>(null)
-  const exampleTabs = useRef<HTMLDivElement>(null)
-  const exampleProgress = useRef<HTMLElement>(null)
-  const osTabs = useRef<HTMLDivElement>(null)
   const { release, assets } = useRelease()
   const info = pageInfo[lang]
-  const t = (key: keyof typeof messages.en) => messages[lang][key]
-  const rich = (key: keyof typeof messages.en) => ({ __html: t(key) })
-  const primaryAsset = visitorOs ? assets[assetOf[visitorOs]] : undefined
+  const other: SiteLanguage = lang === 'uk' ? 'en' : 'uk'
+  const t = (key: Key) => messages[lang][key]
+  const rich = (key: Key) => ({ __html: t(key) })
+  const webApp = asset('app/')
+  const primaryHref = (visitorOs && assets[assetOf[visitorOs]]?.browser_download_url) || '#download'
   const downloadLabel = t('hero.download') + (visitorOs ? ' ' + info[visitorOs] : '')
-  const downloadMeta = visitorOs && release
-    ? [release.tag_name, extOf[visitorOs], assetSize(primaryAsset)].filter(Boolean).join(' · ')
-    : ''
 
-  useReveal()
-  useSegmentIndicator(exampleTabs, activeExample, lang)
-  useSegmentIndicator(osTabs, os, lang)
-  useEffect(() => {
-    const detected = detectOs()
-    setVisitorOs(detected)
-    if (detected) setOs(detected)
-  }, [])
+  useEffect(() => setVisitorOs(detectOs()), [])
+  useOpenDetailsFromHash()
 
-  const scrollSpan = (section: HTMLElement) => section.offsetHeight - (innerHeight - 64)
-  useEffect(() => {
-    const stacked = matchMedia(stackedExamples)
-    let frame = 0
-    const update = () => {
-      setScrolled(scrollY > 8)
-      const section = exampleSection.current
-      if (!section || stacked.matches) return
-      const progress = Math.min(0.9999, Math.max(0, -section.getBoundingClientRect().top / scrollSpan(section)))
-      const position = progress * examples.length
-      const index = Math.floor(position)
-      setActiveExample(index)
-      exampleProgress.current?.style.setProperty('--p', (position - index).toFixed(3))
-    }
-    const schedule = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(update)
-    }
-    update()
-    addEventListener('scroll', schedule, { passive: true })
-    addEventListener('resize', schedule)
-    stacked.addEventListener('change', schedule)
-    return () => {
-      cancelAnimationFrame(frame)
-      removeEventListener('scroll', schedule)
-      removeEventListener('resize', schedule)
-      stacked.removeEventListener('change', schedule)
-    }
-  }, [])
+  const languageLink = (className?: string) => (
+    <PlainButtonLink href={pagePath(other)} hrefLang={other} lang={other} onClick={() => rememberLanguage(other)} className={className}>
+      <LanguageIcon />
+      {pageInfo[other].language}
+    </PlainButtonLink>
+  )
 
-  function selectExample(index: number) {
-    const section = exampleSection.current
-    if (!section) return
-    const top = section.getBoundingClientRect().top + scrollY - 64 + ((index + 0.35) / examples.length) * scrollSpan(section)
-    scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
-  }
+  const navLinks = (
+    <>
+      <NavbarLink href="#examples">{t('nav.examples')}</NavbarLink>
+      <NavbarLink href="#features">{t('nav.features')}</NavbarLink>
+      <NavbarLink href="#faq">{t('nav.faq')}</NavbarLink>
+      <NavbarLink href={webApp}>{t('nav.web')}</NavbarLink>
+    </>
+  )
+
+  const downloadButtons = (
+    <div className="flex flex-wrap items-center gap-4">
+      <ButtonLink href={primaryHref} size="lg">{downloadLabel}</ButtonLink>
+      <PlainButtonLink href={webApp} size="lg">
+        {t('web.open')} <ArrowNarrowRightIcon />
+      </PlainButtonLink>
+    </div>
+  )
 
   return (
     <>
-      <header className={scrolled ? 'scrolled' : undefined}>
-        <div className="wrap bar">
-          <a className="brand" href="#top"><img src={asset('img/icon.png')} alt="" />Penrill</a>
-          <nav>
-            <a className="hide-sm" href="#examples">{t('nav.examples')}</a>
-            <a className="hide-sm" href="#features">{t('nav.features')}</a>
-            <a className="hide-sm" href="https://github.com/Penrill/penrill">GitHub</a>
-            <a className="nav-web hide-sm" href={asset('app/')}>{t('nav.web')}</a>
-            <a className="nav-cta" href="#download">{t('nav.download')}</a>
-            <div className="lang" role="group" aria-label="Мова / Language">
-              <span className="knob" aria-hidden="true"></span>
-              {LANGUAGES.map((code) => (
-                <a key={code} href={pagePath(code)} hrefLang={code} lang={code} aria-current={code === lang ? 'page' : undefined} onClick={() => rememberLanguage(code)}>
-                  {code === 'uk' ? 'УКР' : 'EN'}
-                </a>
+      <NavbarWithLinksActionsAndCenteredLogo
+        id="navbar"
+        menuLabel={t('nav.menu')}
+        links={navLinks}
+        menuLinks={
+          <>
+            {navLinks}
+            <NavbarLink href="#download">{t('nav.download')}</NavbarLink>
+            <NavbarLink href={pagePath(other)} hrefLang={other} lang={other} onClick={() => rememberLanguage(other)}>
+              {pageInfo[other].language}
+            </NavbarLink>
+          </>
+        }
+        logo={
+          <NavbarLogo href="#top" className="items-center gap-2">
+            <img src={asset('img/icon.png')} alt="" width={36} height={36} className="size-9" />
+            <span className="font-logo text-xl font-medium tracking-tight text-mist-950 dark:text-white">Penrill</span>
+          </NavbarLogo>
+        }
+        actions={
+          <>
+            {languageLink('max-sm:hidden')}
+            <ButtonLink href="#download">{t('nav.download')}</ButtonLink>
+          </>
+        }
+      />
+
+      <Main id="top">
+        <HeroLeftAlignedWithDemo
+          id="hero"
+          eyebrow={<AnnouncementBadge href={GITHUB} text={t('hero.badge')} cta={t('hero.badge.cta')} />}
+          headline={t('hero.title')}
+          subheadline={<p>{t('hero.lead')}</p>}
+          cta={
+            <div className="flex flex-col gap-4">
+              {downloadButtons}
+              <p className={`text-sm/7 text-mist-600 dark:text-mist-500 ${richText}`} dangerouslySetInnerHTML={{ __html: downloadNotes[lang][visitorOs ?? 'none'] }} />
+            </div>
+          }
+          demo={
+            <>
+              <Screenshot className="rounded-md lg:hidden" wallpaper="blue" placement="bottom-right">
+                <Shot name="hero" lang={lang} alt={info.heroAlt} eager className="w-[160%] max-w-none sm:w-[130%]" />
+              </Screenshot>
+              <Screenshot className="rounded-lg max-lg:hidden" wallpaper="blue" placement="bottom">
+                <Shot name="hero" lang={lang} alt={info.heroAlt} eager />
+              </Screenshot>
+            </>
+          }
+          footer={
+            <LogoGrid>
+              {([
+                ['Windows', WindowsIcon, '#download'],
+                ['macOS', AppleIcon, '#download'],
+                ['Linux', LinuxIcon, '#download'],
+                [t('hero.browser'), GlobeIcon, webApp]
+              ] as const).map(([name, Icon, href]) => (
+                <Logo key={name}>
+                  <a href={href} className="flex items-center gap-2.5 font-logo text-lg font-medium tracking-tight text-mist-950/70 hover:text-mist-950 dark:text-white/70 dark:hover:text-white">
+                    <Icon className="size-6" />
+                    {name}
+                  </a>
+                </Logo>
               ))}
-            </div>
-          </nav>
-        </div>
-      </header>
+            </LogoGrid>
+          }
+        />
 
-      <main id="top">
-        <div className="hero">
-          <div className="wrap">
-            <a className="pill rv in" href="https://github.com/Penrill/penrill"><b>{t('hero.pill.b')}</b><span>{t('hero.pill')}</span></a>
-            <h1>{t('hero.title')}{' '}{t('hero.highlight').split(' ').map((word, index) => (
-              <Fragment key={word}>
-                {index > 0 && ' '}
-                <span className="scribble" style={{ '--d': (0.5 + index * 0.35) + 's' } as CSSProperties}>
-                  {word}<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 14C60 6 140 4 200 7s70 4 97 1"/></svg>
-                </span>
-              </Fragment>
-            ))}</h1>
-            <p className="lead">{t('hero.lead')}</p>
-            <div className="cta">
-              <div className="cta-buttons">
-              <a className="btn primary" href={primaryAsset?.browser_download_url ?? "#download"}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
-                <span className="p-label">{downloadLabel}</span>
-                <small className="p-meta">{downloadMeta}</small>
-              </a>
-              <a className="btn ghost" href={asset('app/')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9s1.3-6.4 3.8-9z"/></svg>
-                <span className="p-label">{t('web.open')}</span>
-              </a>
+        <Section id="examples" eyebrow={t('ex.kicker')} headline={t('ex.title')} subheadline={<p>{t('ex.sub')}</p>}>
+          <div className="flex flex-col gap-2">
+            {exampleRows.map((row) => (
+              <div key={row[0]} className={`grid grid-cols-1 gap-2 ${row.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
+                {row.map((index) => {
+                  const example = examples[index]
+                  return (
+                    <ExampleCard
+                      key={example.image}
+                      demo={
+                        <Screenshot wallpaper={wallpapers[index]} placement="bottom">
+                          <Shot name={`ex-${example.image}`} lang={lang} alt={example[lang]} />
+                        </Screenshot>
+                      }
+                      headline={
+                        <span className="inline-flex items-center gap-3">
+                          {t(example.title)}
+                          {'isNew' in example && (
+                            <span className="inline-flex rounded-full bg-mist-950/10 px-2 text-xs/6 font-medium text-mist-950 dark:bg-white/10 dark:text-white">
+                              {t('ex.new')}
+                            </span>
+                          )}
+                        </span>
+                      }
+                      subheadline={<p>{t(example.caption)}</p>}
+                    />
+                  )
+                })}
               </div>
-              <div className="platforms"><span>{t('hero.for')}</span><a href="#download" onClick={() => setOs('win')}><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3zM11.5 4.4L21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>Windows</a><a href="#download" onClick={() => setOs('mac')}><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.7.9-.8 0-2-.9-3.2-.9-1.7 0-3.2 1-4.1 2.4-1.8 3.1-.5 7.6 1.3 10.1.8 1.2 1.8 2.6 3.1 2.5 1.2-.1 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.7-4.1zM14 5.3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>macOS</a><a href="#download" onClick={() => setOs('linux')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3c-2.2 0-3.5 1.8-3.5 4.5 0 1.6.4 2.6-.8 4.4C6.4 13.8 5 15.6 5.5 18c.4 1.8 2.6 2.6 6.5 2.6s6.1-.8 6.5-2.6c.5-2.4-.9-4.2-2.2-6.1-1.2-1.8-.8-2.8-.8-4.4C15.5 4.8 14.2 3 12 3z"/><path d="M10.3 8h.01M13.7 8h.01M11 10.2l1 .8 1-.8"/></svg>Linux</a></div>
-              <p className="os-note" dangerouslySetInnerHTML={{ __html: downloadNotes[lang][visitorOs ?? 'none'] }} />
-            </div>
-            <div className="stage">
-              <div className="window">
-                <picture>
-                  <source media="(prefers-color-scheme: dark)" srcSet={asset(`img/hero-dark-${lang}.webp`)} />
-                  <img src={asset(`img/hero-${lang}.webp`)} width={2000} height={1250} fetchPriority="high" alt={info.heroAlt} />
-                </picture>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </Section>
 
-        <section id="examples">
-          <div className="ex-scroll" ref={exampleSection} style={exampleScrollStyle}>
-          <div className="ex-sticky">
-          <div className="wrap">
-            <div className="ex-head">
-              <div className="rv">
-                <p className="eyebrow">{t('ex.kicker')}</p>
-                <h2>{t('ex.title')}</h2>
-              </div>
-              <div className="seg rv d1" id="ex-tabs" role="tablist" aria-label={info.examples} ref={exampleTabs}>
-                <span className="knob" aria-hidden="true"><i ref={exampleProgress} /></span>
-                {examples.map(({ image, tab }, index) => (
-                  <button key={image} type="button" role="tab" aria-selected={activeExample === index} onClick={() => selectExample(index)}>
-                    <span>{t(tab)}</span>{index === 0 && <span className="new">{t('ex.new')}</span>}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="track rv d2">
-              {examples.map(({ image, uk, en, title, caption }, index) => (
-                <figure key={image} className={activeExample === index ? 'cur' : undefined}>
-                  <div className="frame">
-                    <picture>
-                      <source media="(prefers-color-scheme: dark)" srcSet={asset(`img/ex-${image}-dark-${lang}.webp`)} />
-                      <img src={asset(`img/ex-${image}-${lang}.webp`)} width={2000} height={1250} loading="lazy" alt={lang === 'uk' ? uk : en} />
-                    </picture>
+        <FeaturesThreeColumn
+          id="features"
+          eyebrow={t('f.kicker')}
+          headline={t('f.title')}
+          subheadline={<p>{t('f.sub')}</p>}
+          features={features.map(({ icon: Icon, title, text }) => (
+            <Feature key={title} icon={<Icon />} headline={t(title)} subheadline={<p>{t(text)}</p>} />
+          ))}
+        />
+
+        <StatsWithGraph
+          id="reliability"
+          eyebrow={t('s.kicker')}
+          headline={t('s.title')}
+          subheadline={
+            <>
+              <p>{t('s.sub')}</p>
+              <p className="mt-4">{t('s.plug')}</p>
+            </>
+          }
+        >
+          <Stat stat={t('s.n1')} text={t('s.d1')} />
+          <Stat stat={t('s.n3')} text={t('s.d3')} />
+          <Stat stat={t('s.n4')} text={t('s.d4')} />
+        </StatsWithGraph>
+
+        <PricingMultiTier
+          id="download"
+          eyebrow={t('d.kicker')}
+          headline={t('d.title')}
+          subheadline={<p>{t('d.sub')}</p>}
+          plans={platforms.map((platform) => {
+            const file = assets[platform.file]
+            const size = assetSize(file, release?.tag_name)
+            const Download = visitorOs === platform.os ? ButtonLink : SoftButtonLink
+            return (
+              <Plan
+                key={platform.os}
+                name={
+                  <span className="inline-flex items-center gap-3">
+                    <platform.icon className="size-6" />
+                    {platform.name}
+                  </span>
+                }
+                price={t('d.free')}
+                period={size ? '· ' + size : undefined}
+                badge={t(platform.badge)}
+                subheadline={
+                  <>
+                    <p>{t(platform.req)}</p>
+                    <p>{t(platform.updates)}</p>
+                  </>
+                }
+                featuresTitle={t(platform.first)}
+                features={platform.steps.map((step) => <span key={step} className={richText} dangerouslySetInnerHTML={rich(step)} />)}
+                cta={
+                  <div className="flex flex-col items-start gap-4">
+                    <Download href={file?.browser_download_url ?? RELEASES} size="lg">{t(platform.get)}</Download>
+                    {platform.os === 'linux' && (
+                      <div className="flex flex-col gap-1 text-sm/6 text-mist-700 dark:text-mist-400">
+                        <a href={assets.deb?.browser_download_url ?? RELEASES} className="inline-flex items-center gap-2 font-medium text-mist-950 dark:text-white">
+                          {t('d.get.deb')} <ChevronIcon />
+                        </a>
+                        <a href="https://snapcraft.io/inkboard" className="inline-flex items-center gap-2">
+                          <span className="font-medium text-mist-950 dark:text-white">{t('d.get.snap')}</span>
+                          {t('d.snap.note')} <ChevronIcon className="text-mist-950 dark:text-white" />
+                        </a>
+                      </div>
+                    )}
                   </div>
-                  <figcaption>
-                    <h3>{t(title)}</h3>
-                    <p>{t(caption)}</p>
-                  </figcaption>
-                </figure>
+                }
+              />
+            )
+          })}
+          footer={
+            <>
+              <div className="flex flex-col gap-6 rounded-xl bg-mist-950/2.5 p-6 lg:flex-row lg:items-center lg:justify-between dark:bg-white/5">
+                <div>
+                  <h3 className="inline-flex items-center gap-3 text-2xl/8 tracking-tight text-mist-950 dark:text-white">
+                    <GlobeIcon className="size-6" />
+                    {t('web.title')}
+                  </h3>
+                  <ul className="mt-4 grid gap-x-8 gap-y-2 text-sm/6 text-mist-700 sm:grid-cols-2 dark:text-mist-400">
+                    {(['web.p1', 'web.p2', 'web.p3', 'web.p4'] as const).map((key) => (
+                      <li key={key} className="flex gap-4">
+                        <CheckmarkIcon className="h-lh shrink-0 stroke-mist-950 dark:stroke-white" />
+                        <p>{t(key)}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <SoftButtonLink href={webApp} size="lg" className="self-start lg:self-center">
+                  {t('web.open')} <ArrowNarrowRightIcon />
+                </SoftButtonLink>
+              </div>
+              {release && (
+                <p className="mt-4 text-sm/7 text-mist-600 dark:text-mist-500">
+                  <a href={release.html_url} className="font-medium text-mist-950 dark:text-white">
+                    {info.latest}: {release.tag_name}
+                  </a>
+                  {' · '}
+                  {info.released}{' '}
+                  {new Date(release.published_at).toLocaleDateString(lang === 'en' ? 'en-GB' : 'uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              )}
+            </>
+          }
+        />
+
+        <FAQsTwoColumnAccordion id="faq" headline={t('faq.title')}>
+          <Faq
+            id="why"
+            question={t('why.q')}
+            answer={
+              <>
+                <p>{t('why.p')}</p>
+                <ul className={`list-[square] pl-6 marker:text-mist-400 dark:marker:text-mist-600 ${richText}`}>
+                  <li className="pl-2" dangerouslySetInnerHTML={rich('why.1')} />
+                  <li className="pl-2">{t('why.2')}</li>
+                  <li className="pl-2">{t('why.3')}</li>
+                </ul>
+              </>
+            }
+          />
+          <Faq
+            question={t('faq.upd.q')}
+            answer={platforms.map((platform) => (
+              <p key={platform.os} className={richText}>
+                <b>{platform.name}:</b> {t(platform.updates)}
+              </p>
+            ))}
+          />
+          <Faq question={t('faq.tab.q')} answer={<p>{t('faq.tab.a')}</p>} />
+          <Faq question={t('faq.data.q')} answer={<p>{t('faq.data.a')}</p>} />
+          <Faq question={t('faq.free.q')} answer={<p>{t('faq.free.a')}</p>} />
+        </FAQsTwoColumnAccordion>
+
+        <CallToActionSimple id="call-to-action" headline={t('cta.title')} subheadline={<p>{t('cta.sub')}</p>} cta={downloadButtons} />
+      </Main>
+
+      <FooterWithNewsletterFormCategoriesAndSocialIcons
+        id="footer"
+        cta={
+          <FooterBrand
+            logo={
+              <a href="#top" className="inline-flex items-center gap-2">
+                <img src={asset('img/icon.png')} alt="" width={36} height={36} className="size-9" />
+                <span className="font-logo text-xl font-medium tracking-tight">Penrill</span>
+              </a>
+            }
+            subheadline={<p>{t('foot.tagline')}</p>}
+          />
+        }
+        links={
+          <>
+            <FooterCategory title={t('foot.product')}>
+              <FooterLink href="#examples">{t('nav.examples')}</FooterLink>
+              <FooterLink href="#features">{t('nav.features')}</FooterLink>
+              <FooterLink href="#download">{t('nav.download')}</FooterLink>
+              <FooterLink href={webApp}>{t('nav.web')}</FooterLink>
+            </FooterCategory>
+            <FooterCategory title={t('foot.project')}>
+              <FooterLink href={GITHUB}>{t('foot.code')}</FooterLink>
+              <FooterLink href={GITHUB + '/issues'}>{t('foot.issues')}</FooterLink>
+              <FooterLink href={GITHUB + '/releases'}>{t('foot.releases')}</FooterLink>
+            </FooterCategory>
+            <FooterCategory title={t('foot.language')}>
+              {(['en', 'uk'] as const).map((code) => (
+                <FooterLink key={code} href={pagePath(code)} hrefLang={code} lang={code} aria-current={code === lang ? 'page' : undefined} onClick={() => rememberLanguage(code)}>
+                  {pageInfo[code].language}
+                </FooterLink>
               ))}
-
-            </div>
-          </div>
-          </div>
-          </div>
-        </section>
-
-        <section id="features">
-          <div className="wrap">
-            <div className="rv">
-              <p className="eyebrow">{t('f.kicker')}</p>
-              <h2>{t('f.title')}</h2>
-              <p className="sub">{t('f.sub')}</p>
-            </div>
-            <div className="bento">
-              <div className="tile wide rv">
-                <div className="art"><svg viewBox="0 0 400 120" aria-hidden="true">
-                  <path className="draw" pathLength="1" stroke="var(--text)" strokeWidth="6" d="M10 86c26-50 52-66 66-40s-8 52 18 46 34-70 64-72 18 64 46 62 30-44 54-46 22 40 46 36 36-30 66-38"/>
-                  <path className="draw" pathLength="1" stroke="var(--accent)" strokeWidth="3" style={{ transitionDelay: '.6s' }} d="M30 108c80-8 220-8 340-14"/>
-                </svg></div>
-                <h3>{t('f.ink.t')}</h3>
-                <p>{t('f.ink.d')}</p>
-              </div>
-              <div className="tile rv d1">
-                <div className="art"><svg viewBox="0 0 160 120" aria-hidden="true">
-                  <rect className="draw" pathLength="1" x="20" y="34" width="120" height="56" rx="12" stroke="var(--text)" strokeWidth="3"/>
-                  <circle className="draw" pathLength="1" cx="44" cy="62" r="8" stroke="var(--accent)" strokeWidth="3" style={{ transitionDelay: '.4s' }}/>
-                  <circle className="draw" pathLength="1" cx="72" cy="62" r="8" stroke="var(--accent)" strokeWidth="3" style={{ transitionDelay: '.5s' }}/>
-                  <path className="draw" pathLength="1" d="M96 52h28M96 72h18" stroke="var(--faint)" strokeWidth="3" style={{ transitionDelay: '.6s' }}/>
-                </svg></div>
-                <h3>{t('f.wacom.t')}</h3>
-                <p>{t('f.wacom.d')}</p>
-              </div>
-              <div className="tile wide rv">
-                <div className="art"><div className="fx"><span className="fr"><i>3</i><i>4</i></span>+<span className="fr"><i>1</i><i>2</i></span><b>= <span>{t('f.fx.ans')}</span></b></div></div>
-                <h3>{t('f.fx.t')}</h3>
-                <p>{t('f.fx.d')}</p>
-              </div>
-              <div className="tile rv">
-                <div className="art"><div className="tpl" dangerouslySetInnerHTML={rich('f.tpl.art')} /></div>
-                <h3>{t('f.tpl.t')}</h3>
-                <p>{t('f.tpl.d')}</p>
-              </div>
-              <div className="tile rv d1">
-                <div className="art"><div className="keys"><span className="key">Ctrl</span>+<span className="key k2">V</span></div></div>
-                <h3>{t('f.img.t')}</h3>
-                <p>{t('f.img.d')}</p>
-              </div>
-              <div className="tile wide rv d2">
-                <div className="art"><svg viewBox="0 0 160 120" aria-hidden="true">
-                  <path className="ants" d="M28 70c-6-34 30-52 62-46s48 30 38 52-48 30-72 22-24-10-28-28z"/>
-                  <path className="draw" pathLength="1" d="M58 66l16 14 28-34" stroke="var(--text)" strokeWidth="4"/>
-                </svg></div>
-                <h3>{t('f.select.t')}</h3>
-                <p>{t('f.select.d')}</p>
-              </div>
-              <div className="tile rv">
-                <div className="art"><div className="langs"><span>Аа</span><span>Aa</span></div></div>
-                <h3>{t('f.lang.t')}</h3>
-                <p>{t('f.lang.d')}</p>
-              </div>
-              <div className="tile wide rv d1">
-                <div className="art"><svg viewBox="0 0 400 120" aria-hidden="true">
-                  <rect className="draw" pathLength="1" x="40" y="22" width="110" height="76" rx="10" stroke="var(--text)" strokeWidth="3"/>
-                  <path className="draw" pathLength="1" d="M60 46h70M60 62h50M60 78h60" stroke="var(--faint)" strokeWidth="3" style={{ transitionDelay: '.3s' }}/>
-                  <path className="draw" pathLength="1" d="M170 60h60m0 0l-12-10m12 10l-12 10" stroke="var(--accent)" strokeWidth="3" style={{ transitionDelay: '.5s' }}/>
-                  <rect className="draw" pathLength="1" x="250" y="14" width="74" height="92" rx="8" stroke="var(--accent)" strokeWidth="3" style={{ transitionDelay: '.7s' }}/>
-                  <text x="287" y="68" textAnchor="middle" fontFamily="Manrope, sans-serif" fontWeight="800" fontSize="20" fill="var(--accent)">PDF</text>
-                </svg></div>
-                <h3>{t('f.exp.t')}</h3>
-                <p>{t('f.exp.d')}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="calm">
-          <div className="wrap">
-            <div className="rv">
-              <p className="eyebrow">{t('s.kicker')}</p>
-              <h2>{t('s.title')}</h2>
-              <p className="sub">{t('s.sub')}</p>
-            </div>
-            <div className="stats">
-              <div className="stat rv"><div className="num"><Count value={5} /><small>{t('s.u1')}</small></div><p>{t('s.d1')}</p></div>
-              <div className="stat rv d1"><div className="num"><Count value={30} /><small>{t('s.u3')}</small></div><p>{t('s.d3')}</p></div>
-              <div className="stat rv d2"><div className="num"><Count value={0} /></div><p>{t('s.d4')}</p></div>
-            </div>
-            <p className="plug rv">{t('s.plug')}</p>
-          </div>
-        </section>
-
-        <section id="download">
-          <div className="wrap">
-            <div className="dl-head rv">
-              <p className="eyebrow">{t('d.kicker')}</p>
-              <h2>{t('d.title')}</h2>
-              <p className="sub">{t('d.sub')}</p>
-              <div className="seg os" role="tablist" aria-label={info.os} ref={osTabs}>
-                <span className="knob" aria-hidden="true"></span>
-                <button type="button" role="tab" aria-selected={os === 'win'} onClick={() => setOs('win')}><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3zM11.5 4.4L21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>Windows</button>
-                <button type="button" role="tab" aria-selected={os === 'mac'} onClick={() => setOs('mac')}><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.7.9-.8 0-2-.9-3.2-.9-1.7 0-3.2 1-4.1 2.4-1.8 3.1-.5 7.6 1.3 10.1.8 1.2 1.8 2.6 3.1 2.5 1.2-.1 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.7-4.1zM14 5.3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>macOS</button>
-                <button type="button" role="tab" aria-selected={os === 'linux'} onClick={() => setOs('linux')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3c-2.2 0-3.5 1.8-3.5 4.5 0 1.6.4 2.6-.8 4.4C6.4 13.8 5 15.6 5.5 18c.4 1.8 2.6 2.6 6.5 2.6s6.1-.8 6.5-2.6c.5-2.4-.9-4.2-2.2-6.1-1.2-1.8-.8-2.8-.8-4.4C15.5 4.8 14.2 3 12 3z"/><path d="M10.3 8h.01M13.7 8h.01M11 10.2l1 .8 1-.8"/></svg>Linux</button>
-              </div>
-            </div>
-
-            {/* Windows */}
-            <div className="panel" hidden={os !== 'win'} role="tabpanel">
-              <div className="get">
-                <h3>Windows</h3>
-                <p className="req">{t('d.win.req')}</p>
-                <a className="btn" href={assets.exe?.browser_download_url ?? RELEASES}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span>{t('d.get.exe')}</span><small className="size">{assetSize(assets.exe, release?.tag_name)}</small></a>
-                <details className="why">
-                <summary>{t('why.q')}</summary>
-                <div className="body">
-                  <p>{t('why.p')}</p>
-                  <ul>
-                    <li dangerouslySetInnerHTML={rich('why.1')} />
-                    <li>{t('why.2')}</li>
-                    <li>{t('why.3')}</li>
-                  </ul>
-                </div>
-              </details>
-                <div className="upd"><span className="badge auto">{t('u.auto')}</span><br /><span>{t('u.win')}</span></div>
-              </div>
-              <div className="steps-card">
-                <h4>{t('d.first')}</h4>
-                <ol className="steps">
-                  <li><div className="mock"><div className="ss"><b>{t('mk.ss')}</b><span className="ln"></span><span className="ln s"></span><u>{t('mk.more')}</u></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.win.s1')} /></li>
-                  <li><div className="mock"><div className="ss"><b>{t('mk.ss')}</b><span className="ln"></span><span className="mb hot">{t('mk.run')}</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.win.s2')} /></li>
-                </ol>
-              </div>
-            </div>
-
-            {/* macOS */}
-            <div className="panel" hidden={os !== 'mac'} role="tabpanel">
-              <div className="get">
-                <h3>macOS</h3>
-                <p className="req">{t('d.mac.req')}</p>
-                <a className="btn" href={assets.dmg?.browser_download_url ?? RELEASES}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span>{t('d.get.dmg')}</span><small className="size">{assetSize(assets.dmg, release?.tag_name)}</small></a>
-                <details className="why">
-                <summary>{t('why.q')}</summary>
-                <div className="body">
-                  <p>{t('why.p')}</p>
-                  <ul>
-                    <li dangerouslySetInnerHTML={rich('why.1')} />
-                    <li>{t('why.2')}</li>
-                    <li>{t('why.3')}</li>
-                  </ul>
-                </div>
-              </details>
-                <div className="upd"><span className="badge manual">{t('u.manual')}</span><br /><span>{t('u.mac')}</span></div>
-              </div>
-              <div className="steps-card">
-                <h4>{t('d.first.mac')}</h4>
-                <ol className="steps four">
-                  <li><div className="mock"><div className="drag"><img src={asset('img/icon.png')} alt="" /><svg viewBox="0 0 50 44" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" aria-hidden="true"><path d="M3 9a4 4 0 0 1 4-4h11l5 5h20a4 4 0 0 1 4 4v23a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.mac.s1')} /></li>
-                  <li><div className="mock"><div className="dlg"><span className="ln"></span><span className="ln s"></span><div className="row2"><span className="mb hot">{t('mk.done')}</span><span className="mb">…</span></div></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.mac.s2')} /></li>
-                  <li><div className="mock"><div className="side"><div className="ln"></div><div className="hot">{t('mk.privacy')}</div><div className="ln s"></div></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.mac.s3')} /></li>
-                  <li><div className="mock"><div className="dlg"><span className="ln"></span><span className="ln s"></span><span className="mb hot">{t('mk.open')}</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.mac.s4')} /></li>
-                </ol>
-              </div>
-            </div>
-
-            {/* Linux */}
-            <div className="panel" hidden={os !== 'linux'} role="tabpanel">
-              <div className="get">
-                <h3>Linux</h3>
-                <p className="req">{t('d.linux.req')}</p>
-                <a className="btn" href={assets.appimage?.browser_download_url ?? RELEASES}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span>{t('d.get.appimage')}</span><small className="size">{assetSize(assets.appimage, release?.tag_name)}</small></a>
-                <div className="alt"><a href={assets.deb?.browser_download_url ?? RELEASES}><b>{t('d.get.deb')}</b><span className="size">{assetSize(assets.deb)}</span></a><a href="https://snapcraft.io/inkboard"><b>{t('d.get.snap')}</b><span>{t('d.snap.note')}</span></a></div>
-                <div className="upd"><span className="badge auto">{t('u.auto')}</span><br /><span>{t('u.linux')}</span></div>
-              </div>
-              <div className="steps-card">
-                <h4>{t('d.first')}</h4>
-                <ol className="steps">
-                  <li><div className="mock"><div className="chk"><i></i><span>{t('mk.exec')}</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.linux.s1')} /></li>
-                  <li><div className="mock"><div className="file"><img src={asset('img/icon.png')} alt="" /><span>Penrill.AppImage</span></div></div><span className="cap" dangerouslySetInnerHTML={rich('d.linux.s2')} /></li>
-                </ol>
-              </div>
-            </div>
-            <div className="web-card">
-              <div className="web-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9s1.3-6.4 3.8-9z"/></svg></div>
-              <div className="web-text">
-                <h3>{t('web.title')}</h3>
-                <ul>{(['web.p1', 'web.p2', 'web.p3', 'web.p4'] as const).map((k) => <li key={k}>{t(k)}</li>)}</ul>
-              </div>
-              <a className="btn ghost" href={asset('app/')}>{t('web.open')}</a>
-            </div>
-            <p className="ver">{release && <><a href={release.html_url}>{info.latest}: {release.tag_name}</a>{' · '}{info.released} {new Date(release.published_at).toLocaleDateString(lang === 'en' ? 'en-GB' : 'uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}</>}</p>
-          </div>
-        </section>
-
-        <section className="final">
-          <div className="wrap rv">
-            <h2>{t('cta.title')}</h2>
-            <div className="cta-buttons">
-            <a className="btn primary" href={primaryAsset?.browser_download_url ?? "#download"}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
-              <span className="p-label">{downloadLabel}</span>
-              <small className="p-meta">{downloadMeta}</small>
-            </a>
-            <a className="btn ghost" href={asset('app/')}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9s1.3-6.4 3.8-9z"/></svg>
-              <span className="p-label">{t('web.open')}</span>
-            </a>
-            </div>
-            <span className="note">{t('cta.hand')}</span>
-          </div>
-        </section>
-      </main>
-
-      <footer>
-        <div className="wrap">
-          <span>Penrill · <span>{t('foot.license')}</span></span>
-          <a href="https://github.com/Penrill/penrill">{t('foot.code')}</a>
-          <a href="https://github.com/Penrill/penrill/issues">{t('foot.issues')}</a>
-          <a href="https://github.com/Penrill/penrill/releases">{t('foot.releases')}</a>
-        </div>
-      </footer>
+            </FooterCategory>
+          </>
+        }
+        fineprint={<>Penrill · {t('foot.license')}</>}
+        socialLinks={
+          <SocialLink href={GITHUB} name="GitHub">
+            <GitHubIcon />
+          </SocialLink>
+        }
+      />
     </>
   )
 }
