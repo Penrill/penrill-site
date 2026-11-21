@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Penrill</title>
+    <script>
+      // GitHub Pages serves this page for every address without a file of its own. The web app's
+      // pages (/app/board/<id>, /app/templates…) are such addresses: hand them to the app, which
+      // puts the address back (src/renderer/src/router.ts). Anything else goes to the home page.
+      ;(function () {
+        var path = location.pathname
+        if (path.indexOf('/app/') === 0) {
+          location.replace('/app/?route=' + encodeURIComponent(path.slice('/app/'.length)) + location.hash)
+        } else {
+          location.replace(path.indexOf('/uk/') === 0 ? '/uk/' : '/')
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <p><a href="/">Penrill</a></p>
+  </body>
+</html>
