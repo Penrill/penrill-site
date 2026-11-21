@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Connect Penrill</title>
+<link rel="icon" href="/img/apple-touch-icon.png">
+<style>
+  :root { color-scheme: light dark; --bg: #fff; --text: #18181b; --muted: #71717a; --line: rgb(9 9 11 / .1); --accent: #2563eb; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #18181b; --text: #fafafa; --muted: #a1a1aa; --line: rgb(255 255 255 / .1); --accent: #3b82f6; } }
+  html { background: var(--bg); color: var(--text); line-height: 1.5; }
+  body { margin: 0; }
+  main { max-width: 480px; margin: 0 auto; padding: 72px 16px; }
+  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 8px; letter-spacing: -.01em; }
+  p { margin: 0 0 16px; color: var(--muted); }
+  .server { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  a.button { display: inline-flex; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); color: var(--text); }
+  a.button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .hint { font-size: .9rem; margin-top: 24px; }
+  .hint a { color: var(--accent); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <p id="lead"></p>
+  <p class="server" id="server"></p>
+  <div class="actions" id="actions">
+    <a class="button" id="app" href="#"></a>
+    <a class="button" id="web" href="/app/"></a>
+  </div>
+  <p class="hint" id="missing" hidden role="status"></p>
+  <p class="hint" id="download"></p>
+</main>
+<script>
+  // The server address and certificate pin are in the fragment, which browsers never send to penrill.com.
+  // Nothing opens by itself: Safari answers an unknown penrill:// link with an error dialog, so the
+  // visitor picks the app or the browser, whichever they draw in.
+  (() => {
+    const uk = /^uk\b/i.test(navigator.language)
+    const text = uk
+      ? {
+          title: 'Підключити Penrill до сервера',
+          lead: 'Дошки синхронізуватимуться з цим сервером:',
+          app: 'Відкрити застосунок Penrill',
+          web: 'Penrill у браузері',
+          missing: 'Нічого не відкрилося? Застосунок не встановлено або він застарий. Завантажте нову версію або скористайтеся Penrill у браузері.',
+          download: 'Немає Penrill? <a href="/uk/">Завантажити</a>',
+          bad: 'У цьому посиланні немає адреси сервера. Відкрийте посилання зі сторінки вашого сервера.'
+        }
+      : {
+          title: 'Connect Penrill to a server',
+          lead: 'Your boards will sync with this server:',
+          app: 'Open the Penrill app',
+          web: 'Use Penrill in the browser',
+          missing: 'Nothing opened? The app is not installed or is too old. Download the latest version, or use Penrill in the browser.',
+          download: 'No Penrill yet? <a href="/">Download it</a>',
+          bad: 'This link has no server address. Use the link from your server’s page.'
+        }
+    const $ = (id) => document.getElementById(id)
+    document.documentElement.lang = uk ? 'uk' : 'en'
+    for (const id of ['title', 'lead', 'app', 'web', 'missing']) $(id).textContent = text[id]
+    $('download').innerHTML = text.download
+    const params = new URLSearchParams(location.hash.slice(1))
+    const server = params.get('server')
+    let origin = null
+    try { origin = server && /^https?:$/.test(new URL(server).protocol) ? new URL(server).origin : null } catch {}
+    if (!origin) {
+      $('lead').textContent = text.bad
+      $('actions').hidden = true
+      return
+    }
+    $('server').textContent = origin
+    $('app').href = 'penrill://connect?' + params.toString()
+    $('web').href = '/app/#' + params.toString()
+    // Tablets and phones have no Penrill app: the browser is the way there.
+    const touch = /Android|iPhone|iPad/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent))
+    if (touch) {
+      $('app').hidden = true
+      $('download').hidden = true
+    }
+    $(touch ? 'web' : 'app').classList.add('primary')
+    $('app').addEventListener('click', () => setTimeout(() => { $('missing').hidden = false }, 1500))
+  })()
+</script>
+</body>
+</html>
