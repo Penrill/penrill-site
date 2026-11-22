@@ -1,13 +1,19 @@
 /* Oatmeal (Tailwind Plus) theme: Mona Sans headings, Inter text, the Mist neutral. */
+/* The fonts are served from the site itself, not from Google Fonts, so opening the page sends
+   nothing to Google (see the privacy page). */
+@import '@fontsource-variable/mona-sans/wdth.css';
+@import '@fontsource-variable/mona-sans/wdth-italic.css';
+@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/inter/opsz-italic.css';
 /* Only the site's own files are scanned for classes, not the app's. */
 @import 'tailwindcss' source('..');
 
 @theme {
-  --font-display: 'Mona Sans', sans-serif;
+  --font-display: 'Mona Sans Variable', sans-serif;
   --font-display--font-variation-settings: 'wdth' 112.5;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
   /* The Penrill wordmark stays in Mona Sans on every page. */
-  --font-logo: 'Mona Sans', sans-serif;
+  --font-logo: 'Mona Sans Variable', sans-serif;
   --font-logo--font-variation-settings: 'wdth' 112.5;
 
   --color-mist-50: oklch(98.7% 0.002 197.1);
@@ -40,5 +46,5 @@
 /* Mona Sans has no Cyrillic: the Ukrainian page sets its headings in Inter, whose large sizes use
    its display cut. */
 html:lang(uk) {
-  --font-display: 'Inter', system-ui, sans-serif;
+  --font-display: 'Inter Variable', system-ui, sans-serif;
 }
