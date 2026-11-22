@@ -36,8 +36,8 @@ export function storedConsent(): Consent | null {
 
 /**
  * What applies on load: "denied" for a browser that asks for no tracking (Global Privacy Control),
- * even over an older "granted", otherwise the visitor's stored choice. An explicit Accept in Cookie
- * settings still counts for that page view.
+ * even over an older "granted", otherwise the visitor's stored choice. The banner offers no Accept
+ * to such a browser, so there is no choice that would be silently ignored.
  */
 export function currentConsent(): Consent | null {
   return navigator.globalPrivacyControl ? 'denied' : storedConsent()
@@ -55,16 +55,25 @@ export function setConsent(consent: Consent) {
 
 let started = false
 
+// gtag.js expects the arguments object itself, not an array.
+function gtag(..._args: unknown[]) {
+  window.dataLayer = window.dataLayer || []
+  // eslint-disable-next-line prefer-rest-params
+  window.dataLayer.push(arguments)
+}
+
+const CONFIG = { allow_google_signals: false, allow_ad_personalization_signals: false }
+
 export function startAnalytics() {
   if (!analyticsEnabled) return
   // Also turns measurement back on after a withdrawal in the same page view.
   window[`ga-disable-${GA_ID}`] = false
-  if (started) return
+  if (started) {
+    // Re-accepted after a withdrawal: send a hit so this page view is measured and the cookie returns.
+    gtag('config', GA_ID, CONFIG)
+    return
+  }
   started = true
-  window.dataLayer = window.dataLayer || []
-  // gtag.js expects the arguments object itself, not an array.
-  // eslint-disable-next-line prefer-rest-params
-  const gtag = function (..._args: unknown[]) { window.dataLayer!.push(arguments) }
   // Only measurement: no advertising storage, no ad signals, no Google signals.
   gtag('consent', 'default', {
     analytics_storage: 'granted',
@@ -73,7 +82,7 @@ export function startAnalytics() {
     ad_personalization: 'denied'
   })
   gtag('js', new Date())
-  gtag('config', GA_ID, { allow_google_signals: false, allow_ad_personalization_signals: false })
+  gtag('config', GA_ID, CONFIG)
   const script = document.createElement('script')
   script.async = true
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`
@@ -81,7 +90,7 @@ export function startAnalytics() {
 }
 
 /** Withdrawn consent: stop sending and delete the cookies Google Analytics set. */
-function stopAnalytics() {
+export function stopAnalytics() {
   if (!analyticsEnabled) return
   window[`ga-disable-${GA_ID}`] = true
   deleteGoogleCookies()
@@ -91,15 +100,18 @@ function stopAnalytics() {
 function deleteGoogleCookies() {
   const labels = location.hostname.split('.')
   const domains = ['']
-  for (let i = 0; i < labels.length; i++) {
+  // Skip the last label alone (a top-level domain such as "com"), which browsers reject.
+  const last = labels.length > 1 ? labels.length - 1 : labels.length
+  for (let i = 0; i < last; i++) {
     const suffix = labels.slice(i).join('.')
     domains.push(suffix, '.' + suffix)
   }
+  const secure = location.protocol === 'https:' ? '; Secure' : ''
   for (const cookie of document.cookie.split(';')) {
     const name = cookie.split('=')[0].trim()
     if (name !== '_ga' && !name.startsWith('_ga_')) continue
     for (const domain of domains) {
-      document.cookie = `${name}=; Max-Age=0; path=/${domain ? '; domain=' + domain : ''}`
+      document.cookie = `${name}=; Max-Age=0; path=/${domain ? '; domain=' + domain : ''}${secure}`
     }
   }
 }
