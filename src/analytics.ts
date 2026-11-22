@@ -34,9 +34,13 @@ export function storedConsent(): Consent | null {
   }
 }
 
-/** The visitor's choice, or "denied" for a browser that asks for no tracking (Global Privacy Control). */
+/**
+ * What applies on load: "denied" for a browser that asks for no tracking (Global Privacy Control),
+ * even over an older "granted", otherwise the visitor's stored choice. An explicit Accept in Cookie
+ * settings still counts for that page view.
+ */
 export function currentConsent(): Consent | null {
-  return storedConsent() ?? (navigator.globalPrivacyControl ? 'denied' : null)
+  return navigator.globalPrivacyControl ? 'denied' : storedConsent()
 }
 
 export function setConsent(consent: Consent) {
@@ -52,9 +56,11 @@ export function setConsent(consent: Consent) {
 let started = false
 
 export function startAnalytics() {
-  if (!analyticsEnabled || started) return
-  started = true
+  if (!analyticsEnabled) return
+  // Also turns measurement back on after a withdrawal in the same page view.
   window[`ga-disable-${GA_ID}`] = false
+  if (started) return
+  started = true
   window.dataLayer = window.dataLayer || []
   // gtag.js expects the arguments object itself, not an array.
   // eslint-disable-next-line prefer-rest-params
@@ -78,8 +84,17 @@ export function startAnalytics() {
 function stopAnalytics() {
   if (!analyticsEnabled) return
   window[`ga-disable-${GA_ID}`] = true
-  const host = location.hostname
-  const domains = ['', host, '.' + host, '.' + host.split('.').slice(-2).join('.')]
+  deleteGoogleCookies()
+}
+
+/** Google sets its cookie on a parent domain we cannot know in advance, so try every suffix of the host. */
+function deleteGoogleCookies() {
+  const labels = location.hostname.split('.')
+  const domains = ['']
+  for (let i = 0; i < labels.length; i++) {
+    const suffix = labels.slice(i).join('.')
+    domains.push(suffix, '.' + suffix)
+  }
   for (const cookie of document.cookie.split(';')) {
     const name = cookie.split('=')[0].trim()
     if (name !== '_ga' && !name.startsWith('_ga_')) continue
