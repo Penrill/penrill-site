@@ -264,12 +264,14 @@ export const pageInfo = {
     title: 'Penrill: безкоштовна дошка для графічного планшета',
     description: 'Безкоштовна нескінченна дошка для графічного планшета: для пояснень, лекцій і конспектів. Перо з натиском, транспортир і циркуль, формули й графіки за ними, об’ємні фігури, текст. Зберігає все саме, навіть коли зникає світло. Windows, macOS, Linux.',
     heroAlt: 'Penrill: дошка «Геометрія» з транспортиром, шестикутною пірамідою і колом, накресленим циркулем на координатній площині',
+    shareAlt: 'Penrill, безкоштовна нескінченна дошка для графічного планшета',
     win: 'для Windows', mac: 'для macOS', linux: 'для Linux', latest: 'Остання версія', released: 'від', language: 'Українська'
   },
   en: {
     title: 'Penrill: free whiteboard for pen tablets',
     description: 'A free infinite whiteboard for pen tablets: pressure-sensitive ink, protractor and compass, formulas and their graphs, 3D solids and text. Saves everything by itself, even when the power goes out. Windows, macOS, Linux.',
     heroAlt: 'Penrill: the board “Geometry” with a protractor, a hexagonal pyramid and a circle drawn with the compass on a coordinate plane',
+    shareAlt: 'Penrill, a free infinite whiteboard for pen tablets',
     win: 'for Windows', mac: 'for macOS', linux: 'for Linux', latest: 'Latest version', released: 'released', language: 'English'
   }
 }
