@@ -6,13 +6,13 @@
     <meta name="robots" content="noindex" />
     <title>Penrill</title>
     <script>
-      // GitHub Pages serves this page for every address without a file of its own. The web app's
-      // pages (/app/board/<id>, /app/templates…) are such addresses: hand them to the app, which
-      // puts the address back (src/renderer/src/router.ts). Anything else goes to the home page.
+      // GitHub Pages serves this page for every address without a file of its own. The web app used
+      // to live at /app/ and now lives at app.penrill.com: old links to its pages (/app/board/<id>,
+      // /app/templates…) go to the same page there. Anything else goes to the home page.
       ;(function () {
         var path = location.pathname
         if (path.indexOf('/app/') === 0) {
-          location.replace('/app/?route=' + encodeURIComponent(path.slice('/app/'.length)) + location.hash)
+          location.replace('https://app.penrill.com/' + path.slice('/app/'.length) + location.search + location.hash)
         } else {
           location.replace(path.indexOf('/uk/') === 0 ? '/uk/' : '/')
         }

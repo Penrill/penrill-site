@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://app.penrill.com/" />
+    <title>Penrill</title>
+    <script>
+      // The web app moved from penrill.com/app/ to app.penrill.com. Old links keep their route
+      // (?route=…, from the old 404 page) and their #server=…&join=… draw-link parameters.
+      ;(function () {
+        var params = new URLSearchParams(location.search)
+        var route = (params.get('route') || '').replace(/^\/+/, '')
+        params.delete('route')
+        var query = params.toString()
+        location.replace('https://app.penrill.com/' + route + (query ? '?' + query : '') + location.hash)
+      })()
+    </script>
+    <meta http-equiv="refresh" content="0; url=https://app.penrill.com/" />
+  </head>
+  <body>
+    <p>Penrill has moved to <a href="https://app.penrill.com/">app.penrill.com</a>.</p>
+  </body>
+</html>

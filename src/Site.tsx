@@ -36,7 +36,7 @@ import { Stat, StatsWithGraph } from './components/sections/stats-with-graph'
 import { ConsentBanner, ConsentSettingsLink } from './ConsentBanner'
 import { downloadNotes, messages, pageInfo, type SiteLanguage } from './messages'
 import { AppleIcon, GlobeIcon, LinuxIcon, WindowsIcon } from './platform-icons'
-import { asset, assetSize, detectOs, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
+import { asset, assetSize, WEB_APP, detectOs, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
 
 const GITHUB = 'https://github.com/Penrill/penrill'
 type Key = keyof typeof messages.en
@@ -147,7 +147,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
   const other: SiteLanguage = lang === 'uk' ? 'en' : 'uk'
   const t = (key: Key) => messages[lang][key]
   const rich = (key: Key) => ({ __html: t(key) })
-  const webApp = asset('app/')
+  const webApp = WEB_APP
   const primaryHref = (visitorOs && assets[assetOf[visitorOs]]?.browser_download_url) || '#download'
   const downloadLabel = t('hero.download') + (visitorOs ? ' ' + info[visitorOs] : '')
 

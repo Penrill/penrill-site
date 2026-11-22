@@ -4,6 +4,8 @@ import type { SiteLanguage } from './messages'
 const REPO = 'Penrill/penrill'
 export const RELEASES = `https://github.com/${REPO}/releases/latest`
 export const asset = (path: string) => import.meta.env.BASE_URL + path
+/** Penrill in the browser, published from the app's own repo (Penrill/penrill). */
+export const WEB_APP = 'https://app.penrill.com/'
 
 export type Os = 'win' | 'mac' | 'linux'
 

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+# The full Oatmeal template download (Tailwind Plus), kept locally only.
+/vendor/

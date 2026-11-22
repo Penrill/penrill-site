@@ -31,7 +31,7 @@
   <p class="server" id="server"></p>
   <div class="actions" id="actions">
     <a class="button" id="app" href="#"></a>
-    <a class="button" id="web" href="/app/"></a>
+    <a class="button" id="web" href="https://app.penrill.com/"></a>
   </div>
   <p class="hint" id="missing" hidden role="status"></p>
   <p class="hint" id="download"></p>
@@ -76,7 +76,7 @@
     }
     $('server').textContent = origin
     $('app').href = 'penrill://connect?' + params.toString()
-    $('web').href = '/app/#' + params.toString()
+    $('web').href = 'https://app.penrill.com/#' + params.toString()
     // Tablets and phones have no Penrill app: the browser is the way there.
     const touch = /Android|iPhone|iPad/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent))
     if (touch) {

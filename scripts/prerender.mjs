@@ -1,5 +1,5 @@
 // Turns the built landing page into static HTML, one page per language, plus sitemap.xml and
-// robots.txt. Runs after `vite build --config site.vite.config.mts` (see `npm run build:site`): it fills the
+// robots.txt. Runs after `vite build` (see `npm run build`): it fills the
 // built index.html template with the server-rendered markup, so search engines and visitors without
 // JavaScript get the full page, and React then hydrates it in the browser.
 import { execFileSync } from 'node:child_process'
@@ -7,10 +7,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { createServer } from 'vite'
 
-const OUT = 'dist/site'
+const OUT = 'dist'
 
 const vite = await createServer({
-  configFile: 'site.vite.config.mts',
+  configFile: 'vite.config.mts',
   appType: 'custom',
   logLevel: 'warn',
   server: { middlewareMode: true, hmr: false, ws: false }
@@ -48,7 +48,7 @@ function lastCommitDate() {
 function fill(template, parts) {
   let html = template
   for (const [marker, value] of Object.entries(parts)) {
-    if (!html.includes(marker)) throw new Error(`site/index.html has no ${marker}`)
+    if (!html.includes(marker)) throw new Error(`index.html has no ${marker}`)
     html = html.replace(marker, () => value)
   }
   return html
