@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { analyticsEnabled, currentConsent, OPEN_CONSENT_EVENT, setConsent, startAnalytics, type Consent } from './analytics'
+import { analyticsEnabled, currentConsent, OPEN_CONSENT_EVENT, setConsent, startAnalytics, stopAnalytics, type Consent } from './analytics'
 import { messages, type SiteLanguage } from './messages'
 import { pagePath } from './siteData'
 
@@ -16,6 +16,8 @@ export function ConsentBanner({ lang }: { lang: SiteLanguage }) {
     if (!analyticsEnabled) return
     const consent = currentConsent()
     if (consent === 'granted') startAnalytics()
+    // Declined, or Global Privacy Control over an older grant: remove cookies from an earlier visit.
+    if (consent === 'denied') stopAnalytics()
     if (consent === null) setOpen(true)
     const reopen = () => setOpen(true)
     window.addEventListener(OPEN_CONSENT_EVENT, reopen)
@@ -27,6 +29,8 @@ export function ConsentBanner({ lang }: { lang: SiteLanguage }) {
     setConsent(consent)
     setOpen(false)
   }
+  // A browser sending Global Privacy Control counts as declined, so Accept would have no lasting effect.
+  const canAccept = !navigator.globalPrivacyControl
   const button = 'inline-flex flex-1 items-center justify-center rounded-full px-4 py-2 text-sm/7 font-medium'
 
   return (
@@ -51,13 +55,15 @@ export function ConsentBanner({ lang }: { lang: SiteLanguage }) {
         >
           {t('consent.decline')}
         </button>
-        <button
-          type="button"
-          onClick={() => choose('granted')}
-          className={button + ' bg-mist-950 text-white hover:bg-mist-800 dark:bg-mist-300 dark:text-mist-950 dark:hover:bg-mist-200'}
-        >
-          {t('consent.accept')}
-        </button>
+        {canAccept && (
+          <button
+            type="button"
+            onClick={() => choose('granted')}
+            className={button + ' bg-mist-950 text-white hover:bg-mist-800 dark:bg-mist-300 dark:text-mist-950 dark:hover:bg-mist-200'}
+          >
+            {t('consent.accept')}
+          </button>
+        )}
       </div>
     </section>
   )
