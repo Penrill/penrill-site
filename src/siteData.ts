@@ -24,7 +24,15 @@ export function detectOs(): Os | null {
  */
 export const LANGUAGES: readonly SiteLanguage[] = ['uk', 'en']
 export const LANGUAGE_KEY = 'penrill-site-lang'
-export const pagePath = (lang: SiteLanguage) => import.meta.env.BASE_URL + (lang === 'uk' ? 'uk/' : '')
+/** The site's pages: the landing page and the privacy policy, each in every language. */
+export type SitePage = 'home' | 'privacy'
+export const PAGES: readonly SitePage[] = ['home', 'privacy']
+export const pagePath = (lang: SiteLanguage, page: SitePage = 'home') =>
+  import.meta.env.BASE_URL + (lang === 'uk' ? 'uk/' : '') + (page === 'home' ? '' : page + '/')
+
+export function pageOfPath(path: string): SitePage {
+  return /\/privacy\/?$/.test(path) ? 'privacy' : 'home'
+}
 
 export function languageOfPath(path: string): SiteLanguage {
   return path.startsWith(import.meta.env.BASE_URL + 'uk') ? 'uk' : 'en'

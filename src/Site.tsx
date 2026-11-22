@@ -33,6 +33,7 @@ import { HeroLeftAlignedWithDemo } from './components/sections/hero-left-aligned
 import { NavbarLink, NavbarLogo, NavbarWithLinksActionsAndCenteredLogo } from './components/sections/navbar-with-links-actions-and-centered-logo'
 import { Plan, PricingMultiTier } from './components/sections/pricing-multi-tier'
 import { Stat, StatsWithGraph } from './components/sections/stats-with-graph'
+import { ConsentBanner, ConsentSettingsLink } from './ConsentBanner'
 import { downloadNotes, messages, pageInfo, type SiteLanguage } from './messages'
 import { AppleIcon, GlobeIcon, LinuxIcon, WindowsIcon } from './platform-icons'
 import { asset, assetSize, detectOs, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
@@ -446,6 +447,8 @@ export function Site({ lang }: { lang: SiteLanguage }) {
               <FooterLink href={GITHUB}>{t('foot.code')}</FooterLink>
               <FooterLink href={GITHUB + '/issues'}>{t('foot.issues')}</FooterLink>
               <FooterLink href={GITHUB + '/releases'}>{t('foot.releases')}</FooterLink>
+              <FooterLink href={pagePath(lang, 'privacy')}>{t('foot.privacy')}</FooterLink>
+              <ConsentSettingsLink lang={lang} />
             </FooterCategory>
             <FooterCategory title={t('foot.language')}>
               {(['en', 'uk'] as const).map((code) => (
@@ -463,6 +466,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           </SocialLink>
         }
       />
+      <ConsentBanner lang={lang} />
     </>
   )
 }

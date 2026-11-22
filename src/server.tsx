@@ -1,12 +1,14 @@
 import { renderToString } from 'react-dom/server'
+import { PrivacyPage } from './PrivacyPage'
+import { privacy } from './privacy'
 import { Site } from './Site'
 import { pageInfo, type SiteLanguage } from './messages'
-import { LANGUAGE_KEY, LANGUAGES, pagePath, RELEASES } from './siteData'
+import { LANGUAGE_KEY, LANGUAGES, PAGES, pagePath, RELEASES, type SitePage } from './siteData'
 
-/** Build-time entry: scripts/prerender-site.mjs turns each language into a static HTML page. */
+/** Build-time entry: scripts/prerender-site.mjs turns each page in each language into static HTML. */
 
 export const SITE_ORIGIN = 'https://penrill.com'
-const pageUrl = (lang: SiteLanguage) => SITE_ORIGIN + pagePath(lang)
+const pageUrl = (lang: SiteLanguage, page: SitePage = 'home') => SITE_ORIGIN + pagePath(lang, page)
 const IMAGE = SITE_ORIGIN + import.meta.env.BASE_URL + 'img/social-preview.png'
 const LOCALE = { uk: 'uk_UA', en: 'en_US' } as const
 
@@ -72,26 +74,30 @@ function structuredData(lang: SiteLanguage): string {
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`
 }
 
-function head(lang: SiteLanguage): string {
-  const info = pageInfo[lang]
+function head(lang: SiteLanguage, page: SitePage): string {
+  const home = page === 'home'
+  const info = home
+    ? pageInfo[lang]
+    : { ...pageInfo[lang], title: `${privacy[lang].title} · Penrill`, description: privacy[lang].description }
+  const url = (code: SiteLanguage) => pageUrl(code, page)
   const other = LANGUAGES.filter((code) => code !== lang)
   return [
     `<title>${escape(info.title)}</title>`,
     `<meta name="description" content="${escape(info.description)}">`,
-    `<link rel="canonical" href="${pageUrl(lang)}">`,
-    ...LANGUAGES.map((code) => `<link rel="alternate" hreflang="${code}" href="${pageUrl(code)}">`),
-    `<link rel="alternate" hreflang="x-default" href="${pageUrl('en')}">`,
+    `<link rel="canonical" href="${url(lang)}">`,
+    ...LANGUAGES.map((code) => `<link rel="alternate" hreflang="${code}" href="${url(code)}">`),
+    `<link rel="alternate" hreflang="x-default" href="${url('en')}">`,
     `<meta property="og:title" content="${escape(info.title)}">`,
     `<meta property="og:description" content="${escape(info.description)}">`,
-    `<meta property="og:url" content="${pageUrl(lang)}">`,
+    `<meta property="og:url" content="${url(lang)}">`,
     `<meta property="og:locale" content="${LOCALE[lang]}">`,
     ...other.map((code) => `<meta property="og:locale:alternate" content="${LOCALE[code]}">`),
     `<meta property="og:image" content="${IMAGE}">`,
     `<meta property="og:image:alt" content="${escape(info.shareAlt)}">`,
     `<meta name="twitter:image" content="${IMAGE}">`,
     `<meta name="twitter:image:alt" content="${escape(info.shareAlt)}">`,
-    structuredData(lang),
-    ...(lang === 'en' ? [languageRedirect] : [])
+    ...(home ? [structuredData(lang)] : []),
+    ...(home && lang === 'en' ? [languageRedirect] : [])
   ].join('\n')
 }
 
@@ -104,12 +110,14 @@ export interface Page {
 }
 
 export function renderPages(): Page[] {
-  return LANGUAGES.map((lang) => ({
-    lang,
-    file: (lang === 'en' ? '' : lang + '/') + 'index.html',
-    head: head(lang),
-    html: renderToString(<Site lang={lang} />)
-  }))
+  return PAGES.flatMap((page) =>
+    LANGUAGES.map((lang) => ({
+      lang,
+      file: pagePath(lang, page).slice(import.meta.env.BASE_URL.length) + 'index.html',
+      head: head(lang, page),
+      html: renderToString(page === 'home' ? <Site lang={lang} /> : <PrivacyPage lang={lang} />)
+    }))
+  )
 }
 
 /**
@@ -118,13 +126,15 @@ export function renderPages(): Page[] {
  * use it to decide when to crawl again, so it must not be the build time of an unchanged page.
  */
 export function sitemap(lastmod?: string): string {
-  const alternates = [
-    ...LANGUAGES.map((code) => [code, pageUrl(code)]),
-    ['x-default', pageUrl('en')]
-  ]
-  const links = alternates.map(([code, href]) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${href}"/>`).join('\n')
   const modified = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''
-  const urls = LANGUAGES.map((lang) => `  <url>\n    <loc>${pageUrl(lang)}</loc>${modified}\n${links}\n  </url>`).join('\n')
+  const urls = PAGES.flatMap((page) => {
+    const alternates = [
+      ...LANGUAGES.map((code) => [code, pageUrl(code, page)]),
+      ['x-default', pageUrl('en', page)]
+    ]
+    const links = alternates.map(([code, href]) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${href}"/>`).join('\n')
+    return LANGUAGES.map((lang) => `  <url>\n    <loc>${pageUrl(lang, page)}</loc>${modified}\n${links}\n  </url>`)
+  }).join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`
 }
 

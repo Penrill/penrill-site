@@ -118,7 +118,14 @@ const en = {
   'foot.license': 'free to use, source code under the FSL-1.1-MIT',
   'foot.code': 'Source code',
   'foot.issues': 'Report a problem',
-  'foot.releases': 'All versions'
+  'foot.releases': 'All versions',
+  'foot.privacy': 'Privacy',
+  'consent.title': 'Count your visit?',
+  'consent.text': 'With your permission, Google Analytics counts visits to this page, so we know how many people find Penrill. It sets cookies. The app itself collects nothing.',
+  'consent.more': 'Privacy policy',
+  'consent.accept': 'Accept',
+  'consent.decline': 'Decline',
+  'consent.settings': 'Cookie settings'
 }
 
 export const downloadNotes = {
@@ -254,7 +261,14 @@ const uk: Record<keyof typeof en, string> = {
   'foot.license': 'безкоштовна програма, код під ліцензією FSL-1.1-MIT',
   'foot.code': 'Вихідний код',
   'foot.issues': 'Повідомити про помилку',
-  'foot.releases': 'Усі версії'
+  'foot.releases': 'Усі версії',
+  'foot.privacy': 'Конфіденційність',
+  'consent.title': 'Врахувати ваш візит?',
+  'consent.text': 'З вашого дозволу Google Analytics рахує відвідування цієї сторінки, щоб ми знали, скільки людей знаходить Penrill. Для цього він ставить cookie. Сама програма нічого не збирає.',
+  'consent.more': 'Політика конфіденційності',
+  'consent.accept': 'Прийняти',
+  'consent.decline': 'Відхилити',
+  'consent.settings': 'Налаштування cookie'
 }
 
 export const messages = { en, uk }
