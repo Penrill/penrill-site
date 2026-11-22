@@ -1,7 +1,8 @@
-// Turns the built landing page into static HTML, one page per language, plus sitemap.xml.
-// Runs after `vite build --config site.vite.config.mts` (see `npm run build:site`): it fills the
+// Turns the built landing page into static HTML, one page per language, plus sitemap.xml and
+// robots.txt. Runs after `vite build --config site.vite.config.mts` (see `npm run build:site`): it fills the
 // built index.html template with the server-rendered markup, so search engines and visitors without
 // JavaScript get the full page, and React then hydrates it in the browser.
+import { execFileSync } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { createServer } from 'vite'
@@ -16,7 +17,7 @@ const vite = await createServer({
 })
 
 try {
-  const { renderPages, sitemap } = await vite.ssrLoadModule('/src/server.tsx')
+  const { renderPages, sitemap, robots } = await vite.ssrLoadModule('/src/server.tsx')
   const template = await readFile(join(OUT, 'index.html'), 'utf8')
   for (const page of renderPages()) {
     const html = fill(template, {
@@ -29,9 +30,19 @@ try {
     await writeFile(file, html)
     console.log(`prerendered ${file}`)
   }
-  await writeFile(join(OUT, 'sitemap.xml'), sitemap())
+  await writeFile(join(OUT, 'sitemap.xml'), sitemap(lastCommitDate()))
+  await writeFile(join(OUT, 'robots.txt'), robots())
 } finally {
   await vite.close()
+}
+
+/** The date of the commit being built (YYYY-MM-DD), or none outside a git checkout. */
+function lastCommitDate() {
+  try {
+    return execFileSync('git', ['log', '-1', '--format=%cs'], { encoding: 'utf8' }).trim() || undefined
+  } catch {
+    return undefined
+  }
 }
 
 function fill(template, parts) {
