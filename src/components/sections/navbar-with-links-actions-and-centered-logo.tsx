@@ -30,7 +30,7 @@ export function NavbarLink({
 }
 
 export function NavbarLogo({ className, href, ...props }: { href: string } & Omit<ComponentProps<'a'>, 'href'>) {
-  return <a href={href} {...props} className={clsx('inline-flex items-stretch', className)} />
+  return <a href={href} {...props} className={clsx('inline-flex items-center', className)} />
 }
 
 export function NavbarWithLinksActionsAndCenteredLogo({

@@ -195,7 +195,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           </>
         }
         logo={
-          <NavbarLogo href="#top" className="items-center gap-2">
+          <NavbarLogo href="#top" className="gap-2">
             <img src={asset('img/icon.png')} alt="" width={36} height={36} className="size-9" />
             <span className="font-logo text-xl font-medium tracking-tight text-mist-950 dark:text-white">Penrill</span>
           </NavbarLogo>
@@ -459,7 +459,15 @@ export function Site({ lang }: { lang: SiteLanguage }) {
             </FooterCategory>
           </>
         }
-        fineprint={<>Penrill · {t('foot.license')}</>}
+        fineprint={
+          <>
+            <p>Penrill · {t('foot.license')}</p>
+            <p
+              className="mt-1 text-[0.8125rem]/5 text-pretty text-mist-600 [&>span]:font-medium [&>span]:text-mist-950 dark:text-mist-400 dark:[&>span]:text-mist-100"
+              dangerouslySetInnerHTML={{ __html: t('foot.credit') }}
+            />
+          </>
+        }
         socialLinks={
           <SocialLink href={GITHUB} name="GitHub">
             <GitHubIcon />
