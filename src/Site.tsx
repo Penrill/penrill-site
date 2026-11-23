@@ -173,9 +173,9 @@ export function Site({ lang }: { lang: SiteLanguage }) {
   const downloadButtons = (
     <div className="flex flex-wrap items-center gap-4">
       <ButtonLink href={primaryHref} size="lg">{downloadLabel}</ButtonLink>
-      <PlainButtonLink href={webApp} size="lg">
+      <SoftButtonLink href={webApp} size="lg">
         {t('web.open')} <ArrowNarrowRightIcon />
-      </PlainButtonLink>
+      </SoftButtonLink>
     </div>
   )
 
@@ -213,7 +213,12 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           id="hero"
           eyebrow={<AnnouncementBadge href={GITHUB} text={t('hero.badge')} cta={t('hero.badge.cta')} />}
           headline={t('hero.title')}
-          subheadline={<p>{t('hero.lead')}</p>}
+          subheadline={
+            <>
+              <p>{t('hero.lead')}</p>
+              <p>{t('hero.platforms')}</p>
+            </>
+          }
           cta={
             <div className="flex flex-col gap-4">
               {downloadButtons}
