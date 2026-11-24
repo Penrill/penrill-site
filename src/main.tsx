@@ -3,14 +3,17 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import { PrivacyPage } from './PrivacyPage'
 import { Site } from './Site'
 import { languageOfPath, pageOfPath } from './siteData'
+import { registerDownloadTool } from './webmcp'
 import './styles.css'
 
 const lang = languageOfPath(location.pathname)
 document.documentElement.lang = lang
 const root = document.getElementById('root')!
+const page = pageOfPath(location.pathname)
+if (page === 'home') void registerDownloadTool().catch(console.warn)
 const app = (
   <StrictMode>
-    {pageOfPath(location.pathname) === 'privacy' ? <PrivacyPage lang={lang} /> : <Site lang={lang} />}
+    {page === 'privacy' ? <PrivacyPage lang={lang} /> : <Site lang={lang} />}
   </StrictMode>
 )
 

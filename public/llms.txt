@@ -1,0 +1,16 @@
+# Penrill
+
+> Penrill is a free infinite whiteboard for pen tablets. It runs in a browser and on Windows, macOS, and Linux.
+
+## Using Penrill
+
+- [English overview](https://penrill.com/): Features, installation instructions, and frequently asked questions.
+- [Ukrainian overview](https://penrill.com/uk/): Features, installation instructions, and frequently asked questions in Ukrainian.
+- [Web app](https://app.penrill.com/): Open the whiteboard in a browser.
+- [Latest desktop release](https://github.com/Penrill/penrill/releases/latest): Download installers and read release notes.
+
+## Project information
+
+- [App repository](https://github.com/Penrill/penrill): Source code and project documentation.
+- [Privacy policy](https://penrill.com/privacy/): Read the policy in English.
+- [Ukrainian privacy policy](https://penrill.com/uk/privacy/): Read the policy in Ukrainian.

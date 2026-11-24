@@ -360,10 +360,10 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                 features={platform.steps.map((step) => <span key={step} className={richText} dangerouslySetInnerHTML={rich(step)} />)}
                 cta={
                   <div className="flex flex-col items-start gap-4">
-                    <Download href={file?.browser_download_url ?? RELEASES} size="lg">{t(platform.get)}</Download>
+                    <Download data-penrill-package={platform.file} href={file?.browser_download_url ?? RELEASES} size="lg">{t(platform.get)}</Download>
                     {platform.os === 'linux' && (
                       <div className="flex flex-col gap-1 text-sm/6 text-mist-700 dark:text-mist-400">
-                        <a href={assets.deb?.browser_download_url ?? RELEASES} className="inline-flex items-center gap-2 font-medium text-mist-950 dark:text-white">
+                        <a data-penrill-package="deb" href={assets.deb?.browser_download_url ?? RELEASES} className="inline-flex items-center gap-2 font-medium text-mist-950 dark:text-white">
                           {t('d.get.deb')} <ChevronIcon />
                         </a>
                         <a href="https://snapcraft.io/inkboard" className="inline-flex items-center gap-2">
