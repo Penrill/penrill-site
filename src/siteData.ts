@@ -9,9 +9,14 @@ export const WEB_APP = 'https://app.penrill.com/'
 
 export type Os = 'win' | 'mac' | 'linux'
 
+export function isIpad(): boolean {
+  const ua = navigator.userAgent
+  return /ipad/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+}
+
 export function detectOs(): Os | null {
   const ua = navigator.userAgent
-  if (/android|iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return null
+  if (/android|iphone|ipod/i.test(ua) || isIpad()) return null
   const platform = ((navigator as Navigator & { userAgentData?: { platform: string } }).userAgentData?.platform || navigator.platform || ua).toLowerCase()
   if (platform.includes('win')) return 'win'
   if (platform.includes('mac')) return 'mac'

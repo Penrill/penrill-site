@@ -16,6 +16,7 @@ const en = {
   'hero.browser': 'Browser',
   'web.open': 'Open in browser',
   'web.title': 'Or right in the browser',
+  'web.sub': 'Works on computers and on iPad with Apple Pencil.',
   'web.p1': 'Same app, nothing to download',
   'web.p2': 'Boards stay in this browser',
   'web.p3': 'Save a board as a file to move it',
@@ -43,8 +44,8 @@ const en = {
   'f.sub': 'For lessons, lectures and notes.',
   'f.ink.t': 'Pressure-sensitive pen',
   'f.ink.d': 'Press harder for a thicker line. Vector lines, and your palm doesn’t draw.',
-  'f.wacom.t': 'Wacom and other tablets',
-  'f.wacom.d': 'Eraser end, side buttons and ExpressKeys.',
+  'f.wacom.t': 'Tablets and Apple Pencil',
+  'f.wacom.d': 'Wacom and other tablets: eraser end, side buttons and ExpressKeys. Also Apple Pencil on iPad and via Sidecar.',
   'f.fx.t': 'Math keypad',
   'f.fx.d': 'Fractions, roots, powers, integrals. Formulas turn into graphs.',
   'f.tpl.t': 'Templates',
@@ -105,7 +106,7 @@ const en = {
   'why.3': 'The app collects no data and only goes online to check GitHub for updates.',
   'faq.upd.q': 'How does Penrill update?',
   'faq.tab.q': 'Which tablets work?',
-  'faq.tab.a': 'Wacom and other pen tablets that your system recognises. Pen pressure, the eraser end, side buttons and ExpressKeys work.',
+  'faq.tab.a': 'Wacom and other pen tablets that your system recognises, with pressure, eraser end, side buttons and ExpressKeys. Apple Pencil is also supported on iPad in the browser and on Mac via Sidecar.',
   'faq.data.q': 'Do I need an account or the internet?',
   'faq.data.a': 'You can draw and save boards offline without an account. In the web version, open Penrill online the first time. Your boards stay in that browser. Cloud features are in development and will be optional.',
   'faq.free.q': 'Is it really free?',
@@ -135,13 +136,15 @@ export const downloadNotes = {
     win: 'Windows може попередити про невідомого видавця: <b>Докладніше</b> → <b>Усе одно запустити</b>. <a href="#why">Чому так</a>',
     mac: 'Перший запуск: macOS попросить один раз дозволити програму в налаштуваннях. <a href="#download">Як і чому</a>',
     linux: 'AppImage, .deb або Snap Store. <a href="#download">Усі варіанти</a>',
-    none: 'Відкрийте цю сторінку на комп’ютері, щоб завантажити.'
+    ipad: 'На iPad відкрийте веб-версію в браузері, щоб малювати з Apple Pencil.',
+    none: 'Відкрийте цю сторінку на комп’ютері, щоб завантажити, або відкрийте веб-версію на iPad з Apple Pencil.'
   },
   en: {
     win: 'Windows may warn about an unknown publisher: <b>More info</b> → <b>Run anyway</b>. <a href="#why">Why</a>',
     mac: 'First launch: macOS asks you to allow the app once in Settings. <a href="#download">How and why</a>',
     linux: 'AppImage, .deb or the Snap Store. <a href="#download">All options</a>',
-    none: 'Open this page on a computer to download.'
+    ipad: 'On iPad, open the web version in your browser to draw with Apple Pencil.',
+    none: 'Open this page on a computer to download, or open the web version on iPad with Apple Pencil.'
   }
 }
 
@@ -161,6 +164,7 @@ const uk: Record<keyof typeof en, string> = {
   'hero.browser': 'Браузер',
   'web.open': 'Відкрити в браузері',
   'web.title': 'Або просто в браузері',
+  'web.sub': 'Працює на комп’ютерах і на iPad з Apple Pencil.',
   'web.p1': 'Та сама програма, нічого не завантажувати',
   'web.p2': 'Дошки зберігаються в цьому браузері',
   'web.p3': 'Щоб перенести дошку, збережіть її як файл',
@@ -188,8 +192,8 @@ const uk: Record<keyof typeof en, string> = {
   'f.sub': 'Для уроків, лекцій і нотаток.',
   'f.ink.t': 'Перо з натиском',
   'f.ink.d': 'Сильніше тиснете, товща лінія. Лінії векторні, долоня не малює.',
-  'f.wacom.t': 'Wacom та інші планшети',
-  'f.wacom.d': 'Гумка на пері, бічні кнопки та ExpressKeys.',
+  'f.wacom.t': 'Планшети й Apple Pencil',
+  'f.wacom.d': 'Wacom та інші планшети: гумка на пері, бічні кнопки та ExpressKeys. Також Apple Pencil на iPad і через Sidecar.',
   'f.fx.t': 'Клавіатура формул',
   'f.fx.d': 'Дроби, корені, степені, інтеграли. Формули стають графіками.',
   'f.tpl.t': 'Шаблони',
@@ -250,7 +254,7 @@ const uk: Record<keyof typeof en, string> = {
   'why.3': 'Програма не збирає даних і виходить в інтернет лише щоб перевірити оновлення на GitHub.',
   'faq.upd.q': 'Як Penrill оновлюється?',
   'faq.tab.q': 'Які планшети підходять?',
-  'faq.tab.a': 'Wacom та інші графічні планшети, які бачить ваша система. Працюють натиск пера, гумка на пері, бічні кнопки та ExpressKeys.',
+  'faq.tab.a': 'Wacom та інші графічні планшети, які бачить ваша система: працюють натиск пера, гумка на пері, бічні кнопки та ExpressKeys. Також підтримується Apple Pencil на iPad у браузері та на Mac через Sidecar.',
   'faq.data.q': 'Чи потрібні акаунт та інтернет?',
   'faq.data.a': 'Малювати й зберігати дошки можна офлайн без облікового запису. Для першого запуску веб-версії потрібен інтернет. Дошки зберігаються в цьому браузері. Ми працюємо над хмарними функціями, якими можна буде користуватися за бажанням.',
   'faq.free.q': 'Це справді безкоштовно?',
@@ -280,14 +284,14 @@ export const messages = { en, uk }
 export const pageInfo = {
   uk: {
     title: 'Penrill: безкоштовна дошка для графічного планшета',
-    description: 'Безкоштовна нескінченна дошка для графічного планшета: для пояснень, лекцій і конспектів. Перо з натиском, транспортир і циркуль, формули й графіки за ними, об’ємні фігури, текст. Зберігає все саме, навіть коли зникає світло. Windows, macOS, Linux.',
+    description: 'Безкоштовна нескінченна дошка для графічного планшета й Apple Pencil: для пояснень, лекцій і конспектів. Перо з натиском, транспортир і циркуль, формули й графіки за ними, об’ємні фігури, текст. Зберігає все саме, навіть коли зникає світло. Windows, macOS, Linux і браузер.',
     heroAlt: 'Penrill: дошка «Геометрія» з транспортиром, шестикутною пірамідою і колом, накресленим циркулем на координатній площині',
     shareAlt: 'Penrill, безкоштовна нескінченна дошка для графічного планшета',
     win: 'для Windows', mac: 'для macOS', linux: 'для Linux', latest: 'Остання версія', released: 'від', language: 'Українська'
   },
   en: {
     title: 'Penrill: free whiteboard for pen tablets',
-    description: 'A free infinite whiteboard for pen tablets: pressure-sensitive ink, protractor and compass, formulas and their graphs, 3D solids and text. Saves everything by itself, even when the power goes out. Windows, macOS, Linux.',
+    description: 'A free infinite whiteboard for pen tablets and Apple Pencil: pressure-sensitive ink, protractor and compass, formulas and their graphs, 3D solids and text. Saves everything by itself, even when the power goes out. Windows, macOS, Linux and browser.',
     heroAlt: 'Penrill: the board “Geometry” with a protractor, a hexagonal pyramid and a circle drawn with the compass on a coordinate plane',
     shareAlt: 'Penrill, a free infinite whiteboard for pen tablets',
     win: 'for Windows', mac: 'for macOS', linux: 'for Linux', latest: 'Latest version', released: 'released', language: 'English'

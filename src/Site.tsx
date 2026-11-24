@@ -36,7 +36,7 @@ import { Stat, StatsWithGraph } from './components/sections/stats-with-graph'
 import { ConsentBanner, ConsentSettingsLink } from './ConsentBanner'
 import { downloadNotes, messages, pageInfo, type SiteLanguage } from './messages'
 import { AppleIcon, GlobeIcon, LinuxIcon, WindowsIcon } from './platform-icons'
-import { asset, assetSize, WEB_APP, detectOs, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
+import { asset, assetSize, WEB_APP, detectOs, isIpad, pagePath, RELEASES, rememberLanguage, useRelease, type Os } from './siteData'
 
 const GITHUB = 'https://github.com/Penrill/penrill'
 type Key = keyof typeof messages.en
@@ -142,6 +142,7 @@ function useOpenDetailsFromHash() {
 export function Site({ lang }: { lang: SiteLanguage }) {
   // The visitor's system is only known in the browser: the prerendered page starts without it.
   const [visitorOs, setVisitorOs] = useState<Os | null>(null)
+  const [visitorIpad, setVisitorIpad] = useState(false)
   const { release, assets } = useRelease()
   const info = pageInfo[lang]
   const other: SiteLanguage = lang === 'uk' ? 'en' : 'uk'
@@ -150,8 +151,12 @@ export function Site({ lang }: { lang: SiteLanguage }) {
   const webApp = WEB_APP
   const primaryHref = (visitorOs && assets[assetOf[visitorOs]]?.browser_download_url) || '#download'
   const downloadLabel = t('hero.download') + (visitorOs ? ' ' + info[visitorOs] : '')
+  const downloadNote = downloadNotes[lang][visitorOs ?? (visitorIpad ? 'ipad' : 'none')]
 
-  useEffect(() => setVisitorOs(detectOs()), [])
+  useEffect(() => {
+    setVisitorOs(detectOs())
+    setVisitorIpad(isIpad())
+  }, [])
   useOpenDetailsFromHash()
 
   const languageLink = (className?: string) => (
@@ -172,10 +177,21 @@ export function Site({ lang }: { lang: SiteLanguage }) {
 
   const downloadButtons = (
     <div className="flex flex-wrap items-center gap-4">
-      <ButtonLink href={primaryHref} size="lg">{downloadLabel}</ButtonLink>
-      <SoftButtonLink href={webApp} size="lg">
-        {t('web.open')} <ArrowNarrowRightIcon />
-      </SoftButtonLink>
+      {visitorIpad ? (
+        <>
+          <ButtonLink href={webApp} size="lg">
+            {t('web.open')} <ArrowNarrowRightIcon />
+          </ButtonLink>
+          <SoftButtonLink href={primaryHref} size="lg">{downloadLabel}</SoftButtonLink>
+        </>
+      ) : (
+        <>
+          <ButtonLink href={primaryHref} size="lg">{downloadLabel}</ButtonLink>
+          <SoftButtonLink href={webApp} size="lg">
+            {t('web.open')} <ArrowNarrowRightIcon />
+          </SoftButtonLink>
+        </>
+      )}
     </div>
   )
 
@@ -222,7 +238,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           cta={
             <div className="flex flex-col gap-4">
               {downloadButtons}
-              <p className={`text-sm/7 text-mist-600 dark:text-mist-500 ${richText}`} dangerouslySetInnerHTML={{ __html: downloadNotes[lang][visitorOs ?? 'none'] }} />
+              <p className={`text-sm/7 text-mist-600 dark:text-mist-500 ${richText}`} dangerouslySetInnerHTML={{ __html: downloadNote }} />
             </div>
           }
           demo={
@@ -369,6 +385,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                     <GlobeIcon className="size-6" />
                     {t('web.title')}
                   </h3>
+                  <p className="mt-2 text-sm/6 text-mist-700 dark:text-mist-400">{t('web.sub')}</p>
                   <ul className="mt-4 grid gap-x-8 gap-y-2 text-sm/6 text-mist-700 sm:grid-cols-2 dark:text-mist-400">
                     {(['web.p1', 'web.p2', 'web.p3', 'web.p4'] as const).map((key) => (
                       <li key={key} className="flex gap-4">
