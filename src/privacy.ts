@@ -4,7 +4,7 @@ import type { SiteLanguage } from './messages'
  * The privacy policy (GDPR art. 13). Keep it true to what the site does: src/analytics.ts,
  * src/ConsentBanner.tsx and the requests in siteData.ts. Update UPDATED when the text changes.
  */
-export const UPDATED = '2026-11-22'
+export const UPDATED = '2026-11-25'
 const CONTACT = 'https://github.com/Penrill/penrill/issues'
 const GITHUB_PRIVACY = 'https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement'
 const GOOGLE_PRIVACY = 'https://business.safety.google/privacy/'
@@ -31,7 +31,7 @@ export const privacy: Record<SiteLanguage, { title: string; description: string;
       },
       {
         title: 'Who is responsible',
-        body: [`Yaroslav Yushchenko, the author of Penrill, is responsible for this website. For questions about your data, contact us via <a href="${CONTACT}">GitHub</a>.`]
+        body: [`Yaroslav Yushchenko is responsible for this website. For questions about your data, contact us via <a href="${CONTACT}">GitHub</a>.`]
       },
       {
         title: 'Google Analytics',
@@ -74,7 +74,7 @@ export const privacy: Record<SiteLanguage, { title: string; description: string;
       },
       {
         title: 'Хто відповідає',
-        body: [`За цей сайт відповідає Ярослав Ющенко, автор Penrill. З питаннями про ваші дані пишіть через <a href="${CONTACT}">GitHub</a>.`]
+        body: [`За цей сайт відповідає Ярослав Ющенко. З питаннями про ваші дані пишіть через <a href="${CONTACT}">GitHub</a>.`]
       },
       {
         title: 'Google Analytics',
