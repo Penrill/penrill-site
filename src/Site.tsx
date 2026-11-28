@@ -5,10 +5,8 @@ import { Logo, LogoGrid } from './components/elements/logo-grid'
 import { Main } from './components/elements/main'
 import { Screenshot } from './components/elements/screenshot'
 import { Section } from './components/elements/section'
-import { ArrowNarrowRightIcon } from './components/icons/arrow-narrow-right-icon'
 import { ChartLineIcon } from './components/icons/chart-line-icon'
 import { CheckmarkIcon } from './components/icons/checkmark-icon'
-import { ChevronIcon } from './components/icons/chevron-icon'
 import { Document2StackedIcon } from './components/icons/document-2-stacked-icon'
 import { DocumentIcon } from './components/icons/document-icon'
 import { GitHubIcon } from './components/icons/github-icon'
@@ -44,7 +42,7 @@ type Wallpaper = ComponentProps<typeof Screenshot>['wallpaper']
 
 const examples = [
   {
-    image: 'formulas', title: 'ex.h0', caption: 'ex.c0', isNew: true,
+    image: 'formulas', title: 'ex.h0', caption: 'ex.c0',
     uk: 'Формули з клавіатури формул: парабола з обмеженням по x, функція g(x) = √(x + 4) і половина кола x² + y² = 9, обмежена по y, на одній площині; поруч 3/4 + 1/2 з відповіддю 1,25',
     en: 'Formulas from the math keypad: a parabola limited in x, the function g(x) = √(x + 4) and half of the circle x² + y² = 9, limited in y, on one plane; beside them 3/4 + 1/2 with the answer 1.25'
   },
@@ -180,7 +178,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
       {visitorIpad ? (
         <>
           <ButtonLink href={webApp} size="lg">
-            {t('web.open')} <ArrowNarrowRightIcon />
+            {t('web.open')}
           </ButtonLink>
           <SoftButtonLink href={primaryHref} size="lg">{downloadLabel}</SoftButtonLink>
         </>
@@ -188,7 +186,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
         <>
           <ButtonLink href={primaryHref} size="lg">{downloadLabel}</ButtonLink>
           <SoftButtonLink href={webApp} size="lg">
-            {t('web.open')} <ArrowNarrowRightIcon />
+            {t('web.open')}
           </SoftButtonLink>
         </>
       )}
@@ -270,7 +268,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           }
         />
 
-        <Section id="examples" eyebrow={t('ex.kicker')} headline={t('ex.title')} subheadline={<p>{t('ex.sub')}</p>}>
+        <Section id="examples" headline={t('ex.title')} subheadline={<p>{t('ex.sub')}</p>}>
           <div className="flex flex-col gap-2">
             {exampleRows.map((row) => (
               <div key={row[0]} className={`grid grid-cols-1 gap-2 ${row.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
@@ -284,16 +282,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                           <Shot name={`ex-${example.image}`} lang={lang} alt={example[lang]} />
                         </Screenshot>
                       }
-                      headline={
-                        <span className="inline-flex items-center gap-3">
-                          {t(example.title)}
-                          {'isNew' in example && (
-                            <span className="inline-flex rounded-full bg-mist-950/10 px-2 text-xs/6 font-medium text-mist-950 dark:bg-white/10 dark:text-white">
-                              {t('ex.new')}
-                            </span>
-                          )}
-                        </span>
-                      }
+                      headline={t(example.title)}
                       subheadline={<p>{t(example.caption)}</p>}
                     />
                   )
@@ -305,7 +294,6 @@ export function Site({ lang }: { lang: SiteLanguage }) {
 
         <FeaturesThreeColumn
           id="features"
-          eyebrow={t('f.kicker')}
           headline={t('f.title')}
           subheadline={<p>{t('f.sub')}</p>}
           features={features.map(({ icon: Icon, title, text }) => (
@@ -315,7 +303,6 @@ export function Site({ lang }: { lang: SiteLanguage }) {
 
         <StatsWithGraph
           id="reliability"
-          eyebrow={t('s.kicker')}
           headline={t('s.title')}
           subheadline={
             <>
@@ -331,7 +318,6 @@ export function Site({ lang }: { lang: SiteLanguage }) {
 
         <PricingMultiTier
           id="download"
-          eyebrow={t('d.kicker')}
           headline={t('d.title')}
           subheadline={<p>{t('d.sub')}</p>}
           plans={platforms.map((platform) => {
@@ -364,11 +350,11 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                     {platform.os === 'linux' && (
                       <div className="flex flex-col gap-1 text-sm/6 text-mist-700 dark:text-mist-400">
                         <a data-penrill-package="deb" href={assets.deb?.browser_download_url ?? RELEASES} className="inline-flex items-center gap-2 font-medium text-mist-950 dark:text-white">
-                          {t('d.get.deb')} <ChevronIcon />
+                          {t('d.get.deb')}
                         </a>
                         <a href="https://snapcraft.io/inkboard" className="inline-flex items-center gap-2">
                           <span className="font-medium text-mist-950 dark:text-white">{t('d.get.snap')}</span>
-                          {t('d.snap.note')} <ChevronIcon className="text-mist-950 dark:text-white" />
+                          {t('d.snap.note')}
                         </a>
                       </div>
                     )}
@@ -396,7 +382,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
                   </ul>
                 </div>
                 <SoftButtonLink href={webApp} size="lg" className="self-start lg:self-center">
-                  {t('web.open')} <ArrowNarrowRightIcon />
+                  {t('web.open')}
                 </SoftButtonLink>
               </div>
               {release && (
@@ -485,7 +471,7 @@ export function Site({ lang }: { lang: SiteLanguage }) {
           <>
             <p>Penrill · {t('foot.license')}</p>
             <p
-              className="mt-1 text-[0.8125rem]/5 text-pretty text-mist-600 [&>span]:font-medium [&>span]:text-mist-950 dark:text-mist-400 dark:[&>span]:text-mist-100"
+              className="mt-1 text-xs/5 text-pretty text-mist-600 [&>span]:font-medium [&>span]:text-mist-950 dark:text-mist-400 dark:[&>span]:text-mist-100"
               dangerouslySetInnerHTML={{ __html: t('foot.credit') }}
             />
           </>
